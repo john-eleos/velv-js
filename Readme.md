@@ -1,6 +1,6 @@
 # Velv SDK
 
-A JavaScript SDK for interacting with the **VelvPay API**, providing a simple and secure way to access VelvPay services.
+A JavaScript SDK for interacting with the **VelvPay API(https://bit.ly/velvapi)**, providing a simple and secure way to access VelvPay services.
 
 ---
 
