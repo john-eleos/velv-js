@@ -10,6 +10,8 @@ Install the Velv SDK via npm:
 
 ```bash
 npm install velv-sdk
+or 
+yarn add velv-sdk
 ```
 
 ---
