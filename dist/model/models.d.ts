@@ -72,6 +72,7 @@ export interface InitiatePaymentRequest {
     isNaira?: boolean;
     title: string;
     description: string;
+    redirectUrl?: string;
     chargeCustomer?: boolean;
     postPaymentInstructions?: string;
 }

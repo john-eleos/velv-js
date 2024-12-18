@@ -49,7 +49,7 @@ export interface CashCraftRequest {
 }
 export interface PayVirtualAccountRequest{amount: number, isNaira?: boolean, email: string, validityTime?: number}
 export interface PaymentDetailsRequest{transactionId?: string, sendWebhook?: boolean, accountNumber?: string, channel?: string, method?: string, status?: string}
-export interface InitiatePaymentRequest{amount: number, isNaira?: boolean, title: string, description: string, chargeCustomer?: boolean, postPaymentInstructions?: string}
+export interface InitiatePaymentRequest{amount: number, isNaira?: boolean, title: string, description: string, redirectUrl?: string, chargeCustomer?: boolean, postPaymentInstructions?: string}
 export interface RequestFundRequest{
     amount: number; // Amount in kobo
     isNaira?: boolean; // Optional
