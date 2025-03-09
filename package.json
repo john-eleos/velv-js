@@ -1,18 +1,26 @@
 {
   "name": "velv-js",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "test": "jest" 
+    "test": "jest"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/john-eleos/velv-js.git"
   },
-  "keywords": ["sdk", "npm", "typescript", "yarn", "payment", "velv", "velvpay"],
-  "author": "Ifedayo Osun <osunifedayo@gmail.com>", 
+  "keywords": [
+    "sdk",
+    "npm",
+    "typescript",
+    "yarn",
+    "payment",
+    "velv",
+    "velvpay"
+  ],
+  "author": "Ifedayo Osun <osunifedayo@gmail.com>",
   "license": "MIT",
   "dependencies": {
     "@types/crypto-js": "^4.2.2",
