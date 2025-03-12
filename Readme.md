@@ -9,9 +9,9 @@ A JavaScript SDK for interacting with the **VelvPay API(https://bit.ly/velvapi)*
 Install the Velv SDK via npm:
 
 ```bash
-npm install velv-sdk
+npm install velv-js
 or 
-yarn add velv-sdk
+yarn add velv-js
 ```
 
 ---
@@ -21,7 +21,7 @@ yarn add velv-sdk
 ### Importing the SDK
 
 ```javascript
-import Velv from "velv-sdk";
+import Velv from "velv-js";
 ```
 
 ### Initializing the SDK
