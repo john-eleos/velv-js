@@ -18,7 +18,7 @@ const nanoid_1 = require("nanoid");
 const apiroutes_1 = __importDefault(require("../values/apiroutes"));
 class Velv {
     constructor({ secretKey, publicKey, encryptionKey }) {
-        this.baseUrl = `https://api.velvpay.com/api/v1/service`;
+        this.baseUrl = `https://api.velvpay.com`;
         this.secretKey = '';
         this.publicKey = '';
         this.encryptionKey = '';
