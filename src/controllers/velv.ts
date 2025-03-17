@@ -6,7 +6,7 @@ import {BillDetailsRequest, BillListRequest, CashCraftRequest, BankResponse, Bil
 
 
 export default class Velv {
-    baseUrl =  `https://api.velvpay.com/api/v1/service`
+    baseUrl =  `https://api.velvpay.com`
     secretKey = ''
     publicKey = ''
     encryptionKey = ''
