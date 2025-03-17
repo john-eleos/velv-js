@@ -20,3 +20,4 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const velv_1 = __importDefault(require("./controllers/velv"));
 exports.default = velv_1.default;
 __exportStar(require("./model/models"), exports);
+module.exports = exports.default;

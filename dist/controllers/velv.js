@@ -14,7 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const axios_1 = __importDefault(require("axios"));
 const crypto_js_1 = __importDefault(require("crypto-js"));
-const nanoid_1 = __importDefault(require("nanoid"));
+const nanoid_1 = require("nanoid");
 const apiroutes_1 = __importDefault(require("../values/apiroutes"));
 class Velv {
     constructor({ secretKey, publicKey, encryptionKey }) {
@@ -36,7 +36,7 @@ class Velv {
     }
     generateReferenceId({ referenceId }) {
         var _a;
-        this.referenceId = (_a = referenceId === null || referenceId === void 0 ? void 0 : referenceId.trim()) !== null && _a !== void 0 ? _a : `VAS-${(0, nanoid_1.default.nanoid)(10)}`;
+        this.referenceId = (_a = referenceId === null || referenceId === void 0 ? void 0 : referenceId.trim()) !== null && _a !== void 0 ? _a : `VAS-${(0, nanoid_1.nanoid)(10)}`;
     }
     encryptionEngine() {
         return __awaiter(this, void 0, void 0, function* () {
