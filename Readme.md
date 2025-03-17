@@ -21,7 +21,9 @@ yarn add velv-js
 ### Importing the SDK
 
 ```javascript
-import Velv from "velv-js";
+import Velv from "velv-js";  //for ESM or
+
+const Velv = require("velv-js") // for commonJS
 ```
 
 ### Initializing the SDK
