@@ -10,7 +10,7 @@ export default class Velv {
     constructor({ secretKey, publicKey, encryptionKey }: VelvConstructorParam);
     generateReferenceId({ referenceId }: ReferenceGeneratorParam): void;
     encryptionEngine(): Promise<void>;
-    processPostRequest({ endpoint, data, referenceId }: PostRequestParam): Promise<any>;
+    processPostRequest({ endpoint, data, referenceId, idempotencyKey }: PostRequestParam, enableIdempotency?: boolean): Promise<any>;
     processGetRequest({ endpoint, referenceId }: GetRequestParam): Promise<any>;
     payVirtualAccount({ referenceId, body }: {
         referenceId?: string;
@@ -36,9 +36,10 @@ export default class Velv {
         referenceId?: string;
         body: FundRequestStatusReq;
     }): Promise<any>;
-    initiateBankTransfer({ referenceId, body }: {
+    initiateBankTransfer({ referenceId, body, idempotencyKey }: {
         referenceId?: string;
         body: InitiateBankTransferRequest;
+        idempotencyKey: string;
     }): Promise<any>;
     balance({ referenceId }: ReferenceGeneratorParam): Promise<any>;
     resolvePayoutStatus({ referenceId, body }: {

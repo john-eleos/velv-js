@@ -51,13 +51,19 @@ class Velv {
         });
     }
     processPostRequest(_a) {
-        return __awaiter(this, arguments, void 0, function* ({ endpoint, data, referenceId }) {
+        return __awaiter(this, arguments, void 0, function* ({ endpoint, data, referenceId, idempotencyKey }, enableIdempotency = false) {
             this.generateReferenceId({ referenceId: referenceId });
             yield this.encryptionEngine();
             // Set custom headers
             this.axiosInstance.defaults.headers['api-key'] = this.token; // Use the token as the API key
             this.axiosInstance.defaults.headers['public-key'] = this.publicKey;
             this.axiosInstance.defaults.headers['reference-id'] = this.referenceId;
+            if (enableIdempotency) {
+                if (!idempotencyKey) {
+                    throw new Error("POST request failed: Idempotency key is required");
+                }
+                this.axiosInstance.defaults.headers['idempotencykey'] = idempotencyKey;
+            }
             try {
                 const response = yield this.axiosInstance.post(endpoint, data);
                 return response.data; // Return the response data directly
@@ -103,7 +109,7 @@ class Velv {
         return __awaiter(this, arguments, void 0, function* ({ referenceId, body }) {
             const info = apiroutes_1.default.paymentCollectionDetails;
             try {
-                const response = yield this.processGetRequest({ referenceId: referenceId, endpoint: `${info.path}?transaction_id=${body.transactionId}&send_webhook=${body.sendWebhook}&accounNo=${body.accountNumber}&channel=${body.channel}&method=${body.method}&status=${body.status}` });
+                const response = yield this.processGetRequest({ referenceId: referenceId, endpoint: `${info.path}?transaction_id=${body === null || body === void 0 ? void 0 : body.transactionId}&send_webhook=${body === null || body === void 0 ? void 0 : body.sendWebhook}&accounNo=${body === null || body === void 0 ? void 0 : body.accountNumber}&channel=${body === null || body === void 0 ? void 0 : body.channel}&method=${body === null || body === void 0 ? void 0 : body.method}&status=${body === null || body === void 0 ? void 0 : body.status}` });
                 return response;
             }
             catch (error) {
@@ -173,14 +179,15 @@ class Velv {
         });
     }
     initiateBankTransfer(_a) {
-        return __awaiter(this, arguments, void 0, function* ({ referenceId, body }) {
-            const info = apiroutes_1.default.bankTransfer; // Update to your specific API route
+        return __awaiter(this, arguments, void 0, function* ({ referenceId, body, idempotencyKey }) {
+            const info = apiroutes_1.default.payout; // Update to your specific API route
             try {
                 const response = yield this.processPostRequest({
                     endpoint: info.path,
                     referenceId: referenceId,
-                    data: body
-                });
+                    data: body,
+                    idempotencyKey
+                }, true);
                 return response;
             }
             catch (error) {

@@ -13,6 +13,7 @@ export interface PostRequestParam {
     endpoint: string;
     data: any;
     referenceId?: string;
+    idempotencyKey?: string;
 }
 export interface GetRequestParam {
     endpoint: string;
