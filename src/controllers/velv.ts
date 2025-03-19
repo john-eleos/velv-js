@@ -49,7 +49,7 @@ export default class Velv {
 
 
     
-    async processPostRequest({endpoint, data, referenceId}:PostRequestParam) {
+    async processPostRequest({endpoint, data, referenceId, idempotencyKey}:PostRequestParam, enableIdempotency:boolean=false) {
         this.generateReferenceId({referenceId:referenceId})
         await this.encryptionEngine();
 
@@ -58,6 +58,12 @@ export default class Velv {
         this.axiosInstance.defaults.headers['public-key'] = this.publicKey;
         this.axiosInstance.defaults.headers['reference-id'] = this.referenceId;
 
+        if (enableIdempotency) {
+            if (!idempotencyKey) {
+                throw new Error("POST request failed: Idempotency key is required")
+            }
+            this.axiosInstance.defaults.headers['idempotencykey'] = idempotencyKey
+        }
         try {
             const response = await this.axiosInstance.post(endpoint, data);
             return response.data; // Return the response data directly
@@ -105,7 +111,7 @@ export default class Velv {
     async paymentDetails({referenceId, body}:{referenceId?: string, body:PaymentDetailsRequest}){
         const info = apiRoutes.paymentCollectionDetails
         try{
-            const response = await this.processGetRequest({referenceId: referenceId, endpoint: `${info.path}?transaction_id=${body.transactionId}&send_webhook=${body.sendWebhook}&accounNo=${body.accountNumber}&channel=${body.channel}&method=${body.method}&status=${body.status}`});
+            const response = await this.processGetRequest({referenceId: referenceId, endpoint: `${info.path}?transaction_id=${body?.transactionId}&send_webhook=${body?.sendWebhook}&accounNo=${body?.accountNumber}&channel=${body?.channel}&method=${body?.method}&status=${body?.status}`});
             return response;
         }catch(error){
             console.error('Failed to get payment collection details:', error);
@@ -123,7 +129,6 @@ export default class Velv {
             throw error; // Propagate the error
         }
     }
-
 
     async webhookTest({body, referenceId}:{body?:WebhookTestRequest, referenceId?: string}){
         const info = apiRoutes.testWebhook;
@@ -166,14 +171,15 @@ export default class Velv {
         }
     }
 
-    async initiateBankTransfer({referenceId, body}:{referenceId?: string, body:InitiateBankTransferRequest}) {
-        const info = apiRoutes.bankTransfer; // Update to your specific API route
+    async initiateBankTransfer({referenceId, body, idempotencyKey}:{referenceId?: string, body:InitiateBankTransferRequest, idempotencyKey:string}) {
+        const info = apiRoutes.payout; // Update to your specific API route
         try {
             const response = await this.processPostRequest({
                 endpoint: info.path,
                 referenceId: referenceId,
-                data: body
-            });
+                data: body,
+                idempotencyKey
+            }, true);
             return response;
         } catch (error) {
             console.error("Failed to initiate bank transfer:", error);

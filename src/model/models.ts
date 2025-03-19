@@ -5,7 +5,7 @@ export interface WebhookTestRequest {
 
 export interface VelvConstructorParam{secretKey: string, publicKey:string, encryptionKey:string}
 export interface ReferenceGeneratorParam{referenceId?:string}
-export interface PostRequestParam{endpoint: string, data: any, referenceId?:string}
+export interface PostRequestParam{endpoint: string, data: any, referenceId?:string, idempotencyKey?:string}
 export interface GetRequestParam{endpoint: string,referenceId?:string}
 export interface Account {
     account_number: string;
