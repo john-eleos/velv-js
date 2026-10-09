@@ -26,8 +26,9 @@
           "404": { "$ref": "#/components/responses/ApiError" },
           "422": { "$ref": "#/components/responses/LegacyV1AuthError" },
           "429": { "$ref": "#/components/responses/GlobalRateLimitError" },
-          "500": { "$ref": "#/components/responses/HandlerError" },
-          "503": { "$ref": "#/components/responses/LegacyV1AuthError" }
+          "500": { "$ref": "#/components/responses/HandlerOrGlobalError" },
+          "502": { "$ref": "#/components/responses/GlobalTransportError" },
+          "503": { "$ref": "#/components/responses/LegacyV1OrGlobalUnavailable" }
         }
       }
     },
@@ -52,8 +53,9 @@
           "403": { "$ref": "#/components/responses/LegacyV1AuthError" },
           "422": { "$ref": "#/components/responses/LegacyV1AuthError" },
           "429": { "$ref": "#/components/responses/GlobalRateLimitError" },
-          "500": { "$ref": "#/components/responses/HandlerError" },
-          "503": { "$ref": "#/components/responses/LegacyV1AuthError" }
+          "500": { "$ref": "#/components/responses/HandlerOrGlobalError" },
+          "502": { "$ref": "#/components/responses/GlobalTransportError" },
+          "503": { "$ref": "#/components/responses/LegacyV1OrGlobalUnavailable" }
         }
       }
     },
@@ -73,8 +75,9 @@
           "404": { "$ref": "#/components/responses/ApiError" },
           "422": { "$ref": "#/components/responses/LegacyV1AuthError" },
           "429": { "$ref": "#/components/responses/GlobalRateLimitError" },
-          "500": { "$ref": "#/components/responses/HandlerError" },
-          "503": { "$ref": "#/components/responses/LegacyV1AuthError" }
+          "500": { "$ref": "#/components/responses/HandlerOrGlobalError" },
+          "502": { "$ref": "#/components/responses/GlobalTransportError" },
+          "503": { "$ref": "#/components/responses/LegacyV1OrGlobalUnavailable" }
         }
       }
     },
@@ -96,8 +99,9 @@
           "403": { "$ref": "#/components/responses/LegacyV1AuthError" },
           "422": { "$ref": "#/components/responses/LegacyV1AuthError" },
           "429": { "$ref": "#/components/responses/GlobalRateLimitError" },
-          "500": { "$ref": "#/components/responses/HandlerError" },
-          "503": { "$ref": "#/components/responses/LegacyV1AuthError" }
+          "500": { "$ref": "#/components/responses/HandlerOrGlobalError" },
+          "502": { "$ref": "#/components/responses/GlobalTransportError" },
+          "503": { "$ref": "#/components/responses/LegacyV1OrGlobalUnavailable" }
         }
       }
     },
@@ -123,8 +127,9 @@
           "403": { "$ref": "#/components/responses/LegacyV1AuthError" },
           "422": { "$ref": "#/components/responses/LegacyV1AuthError" },
           "429": { "$ref": "#/components/responses/GlobalRateLimitError" },
-          "500": { "$ref": "#/components/responses/HandlerError" },
-          "503": { "$ref": "#/components/responses/LegacyV1AuthError" }
+          "500": { "$ref": "#/components/responses/HandlerOrGlobalError" },
+          "502": { "$ref": "#/components/responses/GlobalTransportError" },
+          "503": { "$ref": "#/components/responses/LegacyV1OrGlobalUnavailable" }
         }
       }
     },
@@ -144,8 +149,9 @@
           "404": { "$ref": "#/components/responses/ApiError" },
           "422": { "$ref": "#/components/responses/LegacyV1AuthError" },
           "429": { "$ref": "#/components/responses/GlobalRateLimitError" },
-          "500": { "$ref": "#/components/responses/HandlerError" },
-          "503": { "$ref": "#/components/responses/LegacyV1AuthError" }
+          "500": { "$ref": "#/components/responses/HandlerOrGlobalError" },
+          "502": { "$ref": "#/components/responses/GlobalTransportError" },
+          "503": { "$ref": "#/components/responses/LegacyV1OrGlobalUnavailable" }
         }
       }
     },
@@ -169,9 +175,10 @@
           "200": { "$ref": "#/components/responses/PaginatedRecords" },
           "401": { "$ref": "#/components/responses/AuthError" },
           "403": { "$ref": "#/components/responses/AuthError" },
-          "429": { "$ref": "#/components/responses/AuthError" },
-          "500": { "$ref": "#/components/responses/HandlerError" },
-          "503": { "$ref": "#/components/responses/AuthError" }
+          "429": { "$ref": "#/components/responses/HeadlessRateLimitError" },
+          "500": { "$ref": "#/components/responses/HandlerOrGlobalError" },
+          "502": { "$ref": "#/components/responses/GlobalTransportError" },
+          "503": { "$ref": "#/components/responses/HeadlessOrGlobalUnavailable" }
         }
       }
     },
@@ -196,9 +203,10 @@
           "200": { "$ref": "#/components/responses/PaginatedRecords" },
           "401": { "$ref": "#/components/responses/AuthError" },
           "403": { "$ref": "#/components/responses/AuthError" },
-          "429": { "$ref": "#/components/responses/AuthError" },
-          "500": { "$ref": "#/components/responses/HandlerError" },
-          "503": { "$ref": "#/components/responses/AuthError" }
+          "429": { "$ref": "#/components/responses/HeadlessRateLimitError" },
+          "500": { "$ref": "#/components/responses/HandlerOrGlobalError" },
+          "502": { "$ref": "#/components/responses/GlobalTransportError" },
+          "503": { "$ref": "#/components/responses/HeadlessOrGlobalUnavailable" }
         }
       }
     },
@@ -217,9 +225,10 @@
           "401": { "$ref": "#/components/responses/AuthError" },
           "403": { "$ref": "#/components/responses/AuthError" },
           "404": { "$ref": "#/components/responses/ApiError" },
-          "429": { "$ref": "#/components/responses/AuthError" },
-          "500": { "$ref": "#/components/responses/HandlerError" },
-          "503": { "$ref": "#/components/responses/AuthError" }
+          "429": { "$ref": "#/components/responses/HeadlessRateLimitError" },
+          "500": { "$ref": "#/components/responses/HandlerOrGlobalError" },
+          "502": { "$ref": "#/components/responses/GlobalTransportError" },
+          "503": { "$ref": "#/components/responses/HeadlessOrGlobalUnavailable" }
         }
       }
     },
@@ -241,9 +250,10 @@
           "200": { "$ref": "#/components/responses/PaginatedRecords" },
           "401": { "$ref": "#/components/responses/AuthError" },
           "403": { "$ref": "#/components/responses/AuthError" },
-          "429": { "$ref": "#/components/responses/AuthError" },
-          "500": { "$ref": "#/components/responses/HandlerError" },
-          "503": { "$ref": "#/components/responses/AuthError" }
+          "429": { "$ref": "#/components/responses/HeadlessRateLimitError" },
+          "500": { "$ref": "#/components/responses/HandlerOrGlobalError" },
+          "502": { "$ref": "#/components/responses/GlobalTransportError" },
+          "503": { "$ref": "#/components/responses/HeadlessOrGlobalUnavailable" }
         }
       }
     },
@@ -265,9 +275,10 @@
           "200": { "$ref": "#/components/responses/PaginatedRecords" },
           "401": { "$ref": "#/components/responses/AuthError" },
           "403": { "$ref": "#/components/responses/AuthError" },
-          "429": { "$ref": "#/components/responses/AuthError" },
-          "500": { "$ref": "#/components/responses/HandlerError" },
-          "503": { "$ref": "#/components/responses/AuthError" }
+          "429": { "$ref": "#/components/responses/HeadlessRateLimitError" },
+          "500": { "$ref": "#/components/responses/HandlerOrGlobalError" },
+          "502": { "$ref": "#/components/responses/GlobalTransportError" },
+          "503": { "$ref": "#/components/responses/HeadlessOrGlobalUnavailable" }
         }
       }
     },
@@ -290,9 +301,10 @@
           "200": { "$ref": "#/components/responses/PaginatedRecords" },
           "401": { "$ref": "#/components/responses/AuthError" },
           "403": { "$ref": "#/components/responses/AuthError" },
-          "429": { "$ref": "#/components/responses/AuthError" },
-          "500": { "$ref": "#/components/responses/HandlerError" },
-          "503": { "$ref": "#/components/responses/AuthError" }
+          "429": { "$ref": "#/components/responses/HeadlessRateLimitError" },
+          "500": { "$ref": "#/components/responses/HandlerOrGlobalError" },
+          "502": { "$ref": "#/components/responses/GlobalTransportError" },
+          "503": { "$ref": "#/components/responses/HeadlessOrGlobalUnavailable" }
         }
       }
     }
@@ -348,7 +360,7 @@
         },
         "additionalProperties": true
       },
-      "GlobalRateLimitEnvelope": {
+      "GlobalJsonErrorEnvelope": {
         "type": "object",
         "required": ["error"],
         "properties": { "error": { "type": "string" } },
@@ -373,9 +385,13 @@
         "content": { "application/json": { "schema": { "type": "object", "required": ["status", "data", "meta"], "properties": { "status": { "const": "success" }, "data": { "type": "array", "items": { "$ref": "#/components/schemas/OpenRecord" } }, "meta": { "$ref": "#/components/schemas/Meta" } }, "additionalProperties": false } } }
       },
       "LegacyV1AuthError": { "description": "Legacy v1 authentication/account denial with status and err; reason is absent from the blacklisted-account response", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/LegacyV1ErrorEnvelope" } } } },
-      "GlobalRateLimitError": { "description": "Server-level /api rate-limit response", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/GlobalRateLimitEnvelope" } } } },
+      "GlobalRateLimitError": { "description": "Server-level /api rate-limit response", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/GlobalJsonErrorEnvelope" } } } },
+      "HeadlessRateLimitError": { "description": "Either the global per-IP limiter or the structured per-headless-credential limiter", "content": { "application/json": { "schema": { "oneOf": [{ "$ref": "#/components/schemas/ErrorEnvelope" }, { "$ref": "#/components/schemas/GlobalJsonErrorEnvelope" }] } } } },
+      "LegacyV1OrGlobalUnavailable": { "description": "Either the legacy v1 authentication-unavailable response or a global limiter connection response", "content": { "application/json": { "schema": { "oneOf": [{ "$ref": "#/components/schemas/LegacyV1ErrorEnvelope" }, { "$ref": "#/components/schemas/GlobalJsonErrorEnvelope" }] } } } },
+      "HeadlessOrGlobalUnavailable": { "description": "Either the structured headless authentication-unavailable response or a global limiter connection response", "content": { "application/json": { "schema": { "oneOf": [{ "$ref": "#/components/schemas/ErrorEnvelope" }, { "$ref": "#/components/schemas/GlobalJsonErrorEnvelope" }] } } } },
+      "GlobalTransportError": { "description": "Global connection-reset response", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/GlobalJsonErrorEnvelope" } } } },
       "AuthError": { "description": "Structured headless authentication, account, scope, feature, rate-limit or availability denial", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } } } },
-      "HandlerError": { "description": "Structured storefront/headless handler failure", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } } } },
+      "HandlerOrGlobalError": { "description": "Structured storefront/headless handler failure or the global unhandled-error fallback", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } }, "text/html": { "schema": { "type": "string", "const": "Something went wrong!" } } } },
       "ApiError": { "description": "Operation-specific error envelope", "content": { "application/json": { "schema": { "type": "object", "additionalProperties": true } } } }
     }
   }

@@ -67,19 +67,54 @@ test('v1 and v2 error contracts match their distinct middleware envelopes', () =
 
   for (const { routePath, operation } of operations.filter(item => item.routePath.startsWith('/api/v1/'))) {
     for (const status of ['400', '403', '422', '503']) {
-      assert.equal(operation.responses[status].$ref, '#/components/responses/LegacyV1AuthError', `${routePath} ${status}`)
+      const expected = status === '503' ? '#/components/responses/LegacyV1OrGlobalUnavailable' : '#/components/responses/LegacyV1AuthError'
+      assert.equal(operation.responses[status].$ref, expected, `${routePath} ${status}`)
     }
     assert.equal(operation.responses['429'].$ref, '#/components/responses/GlobalRateLimitError', `${routePath} 429`)
-    assert.equal(operation.responses['500'].$ref, '#/components/responses/HandlerError', `${routePath} 500`)
+    assert.equal(operation.responses['500'].$ref, '#/components/responses/HandlerOrGlobalError', `${routePath} 500`)
+    assert.equal(operation.responses['502'].$ref, '#/components/responses/GlobalTransportError', `${routePath} 502`)
   }
 
   for (const { routePath, operation } of operations.filter(item => item.routePath.startsWith('/api/v2/'))) {
-    for (const status of ['401', '403', '429', '503']) {
+    for (const status of ['401', '403']) {
       assert.equal(operation.responses[status].$ref, '#/components/responses/AuthError', `${routePath} ${status}`)
     }
-    assert.equal(operation.responses['500'].$ref, '#/components/responses/HandlerError', `${routePath} 500`)
+    assert.equal(operation.responses['429'].$ref, '#/components/responses/HeadlessRateLimitError', `${routePath} 429`)
+    assert.equal(operation.responses['500'].$ref, '#/components/responses/HandlerOrGlobalError', `${routePath} 500`)
+    assert.equal(operation.responses['502'].$ref, '#/components/responses/GlobalTransportError', `${routePath} 502`)
+    assert.equal(operation.responses['503'].$ref, '#/components/responses/HeadlessOrGlobalUnavailable', `${routePath} 503`)
   }
   assert.deepEqual(contract.components.schemas.LegacyV1ErrorEnvelope.required, ['status', 'err'])
+})
+
+test('headless 429 oneOf accepts both credential and global limiter fixtures', () => {
+  const contract = readJson('openapi/velvpay-agent-read-api-v0.2.0.json')
+  const oneOf = contract.components.responses.HeadlessRateLimitError.content['application/json'].schema.oneOf
+  assert.deepEqual(oneOf.map(branch => branch.$ref), [
+    '#/components/schemas/ErrorEnvelope',
+    '#/components/schemas/GlobalJsonErrorEnvelope'
+  ])
+
+  const matches = (schemaName, value) => {
+    const schema = contract.components.schemas[schemaName]
+    if (schema.required?.some(key => !Object.hasOwn(value, key))) return false
+    if (schema.properties?.status?.const && value.status !== schema.properties.status.const) return false
+    if (schemaName === 'ErrorEnvelope') {
+      return typeof value.error === 'object' && value.error !== null &&
+        typeof value.error.code === 'string' && typeof value.error.message === 'string'
+    }
+    return typeof value.error === 'string'
+  }
+  const credentialFixture = {
+    status: 'error',
+    error: { code: 'HEADLESS_RATE_LIMITED', message: 'API rate limit exceeded; retry after the current minute' }
+  }
+  const globalFixture = { error: 'Too many requests, slow down.' }
+
+  assert.equal(matches('ErrorEnvelope', credentialFixture), true)
+  assert.equal(matches('GlobalJsonErrorEnvelope', credentialFixture), false)
+  assert.equal(matches('GlobalJsonErrorEnvelope', globalFixture), true)
+  assert.equal(matches('ErrorEnvelope', globalFixture), false)
 })
 
 test('every full-record response declares classification and an allowlist policy', () => {

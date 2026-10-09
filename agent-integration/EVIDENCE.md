@@ -92,8 +92,8 @@ Commands and results:
 
 ```text
 npm test
-  17 tests, 17 passed, 0 failed, 0 skipped, 0 todo
-  Node test-runner duration: 48.67425 ms
+  18 tests, 18 passed, 0 failed, 0 skipped, 0 todo
+  Node test-runner duration: 59.037625 ms
 
 ../node_modules/.bin/tsc --noEmit --target ES2022 --module Node16 --moduleResolution Node16 --esModuleInterop --skipLibCheck examples/collection.ts examples/catalog.ts
   PASS (exit 0)
@@ -133,6 +133,8 @@ The prompt-only adversarial review was repeated for the v0.2 expansion:
 - Security-auditor finding, resolved: open persistence records could hide customer or merchant-sensitive fields. Relevant OpenAPI operations now carry data-classification extensions, and agent instructions require an explicit downstream allowlist.
 
 The independent review of local commit `0c59ad92e351aed65c1b18db8e6c0e7aeda351a1` then identified five publication blockers, all corrected in the following local review commit: live-host defaults were removed from the curl example; v1 legacy and v2 structured error schemas were separated; every full-record response received machine-readable classification and allowlist requirements; residual GET/read-only wording was corrected with counter/log/analytics/latency side effects; and unsubstantiated feed/source timestamps were replaced with evidence-backed provenance.
+
+Re-review of that correction found one remaining shared-middleware gap: v2 429 responses can come from either the structured headless credential limiter or the earlier global per-IP `/api` limiter. The OpenAPI now models both branches with `oneOf` on every v2 retrieval. The same cross-contract pass also records the global JSON 502/503 connection envelopes and plain-string 500 fallback alongside the route-local structured or legacy responses.
 
 ## Revision timestamp provenance
 
