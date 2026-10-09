@@ -78,9 +78,9 @@ Observed headless authentication failures use the structured error envelope and 
 | 429 | either the global per-IP `/api` limiter (`{"error":"..."}`) or the structured per-credential minute limiter |
 | 500 | structured handler failure or the global plain-string unhandled-error fallback |
 | 502 | global connection-reset response (`{"error":"..."}`) |
-| 503 | structured authentication dependency failure or the global limiter connection response (`{"error":"..."}`) |
+| 503 | structured authentication dependency failure |
 
-The v1 merchant middleware instead uses legacy response shapes: 422 for missing authentication headers; 403 for an unknown/inactive merchant, IP-allowlist mismatch or invalid ciphertext; 400 for a blacklisted account; and 503 when authentication dependencies fail. The server-level `/api` limiter can return the global JSON 429/503 envelopes, connection reset can return global JSON 502, and an unhandled error can reach the plain-string 500 fallback. The storefront wrapper ordinarily returns a structured 500 handler error. Consumers must preserve the HTTP status and tolerate the documented legacy, structured and global envelopes.
+The v1 merchant middleware instead uses legacy response shapes: 422 for missing authentication headers; 403 for an unknown/inactive merchant, IP-allowlist mismatch or invalid ciphertext; 400 for a blacklisted account; and 503 when authentication dependencies fail. The server-level `/api` limiter can return the global JSON 429 envelope, connection reset can return global JSON 502, and an unhandled error can reach the plain-string 500 fallback. The storefront wrapper ordinarily returns a structured 500 handler error. The limiter also attempts a JSON 503 after detecting an already-destroyed request socket; because that socket cannot carry a client-observable response, it is an implementation limitation rather than a wire contract. Consumers must preserve the HTTP status and tolerate the documented legacy, structured and observable global envelopes.
 
 ## Amount and status boundaries
 

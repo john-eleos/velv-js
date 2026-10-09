@@ -67,8 +67,7 @@ test('v1 and v2 error contracts match their distinct middleware envelopes', () =
 
   for (const { routePath, operation } of operations.filter(item => item.routePath.startsWith('/api/v1/'))) {
     for (const status of ['400', '403', '422', '503']) {
-      const expected = status === '503' ? '#/components/responses/LegacyV1OrGlobalUnavailable' : '#/components/responses/LegacyV1AuthError'
-      assert.equal(operation.responses[status].$ref, expected, `${routePath} ${status}`)
+      assert.equal(operation.responses[status].$ref, '#/components/responses/LegacyV1AuthError', `${routePath} ${status}`)
     }
     assert.equal(operation.responses['429'].$ref, '#/components/responses/GlobalRateLimitError', `${routePath} 429`)
     assert.equal(operation.responses['500'].$ref, '#/components/responses/HandlerOrGlobalError', `${routePath} 500`)
@@ -82,8 +81,10 @@ test('v1 and v2 error contracts match their distinct middleware envelopes', () =
     assert.equal(operation.responses['429'].$ref, '#/components/responses/HeadlessRateLimitError', `${routePath} 429`)
     assert.equal(operation.responses['500'].$ref, '#/components/responses/HandlerOrGlobalError', `${routePath} 500`)
     assert.equal(operation.responses['502'].$ref, '#/components/responses/GlobalTransportError', `${routePath} 502`)
-    assert.equal(operation.responses['503'].$ref, '#/components/responses/HeadlessOrGlobalUnavailable', `${routePath} 503`)
+    assert.equal(operation.responses['503'].$ref, '#/components/responses/AuthError', `${routePath} 503`)
   }
+  assert.equal(contract.components.responses.LegacyV1OrGlobalUnavailable, undefined)
+  assert.equal(contract.components.responses.HeadlessOrGlobalUnavailable, undefined)
   assert.deepEqual(contract.components.schemas.LegacyV1ErrorEnvelope.required, ['status', 'err'])
 })
 
