@@ -1,6 +1,16 @@
 # Velv SDK
 
-A JavaScript SDK for interacting with the **VelvPay API(https://bit.ly/velvapi)**, providing a simple and secure way to access VelvPay services.
+A JavaScript SDK for interacting with the [VelvPay API](https://documenter.getpostman.com/view/36526309/2sA3XY7J6K), providing a simple and secure way to access VelvPay services.
+
+---
+
+## Integration resources
+
+- [VelvPay API collections](https://velvpay-api-collections.orange-smile-1161.chatgpt.site/)
+- [Starter integration](https://velvpay-api-collections.orange-smile-1161.chatgpt.site/starter/index.html)
+- [Duplicate payment callbacks guide](https://velvpay-api-collections.orange-smile-1161.chatgpt.site/resources/duplicate-payment-callbacks/index.html)
+
+Keep secret and encryption credentials on your server. Verify the current technical reference before using an integration in a live environment.
 
 ---
 
