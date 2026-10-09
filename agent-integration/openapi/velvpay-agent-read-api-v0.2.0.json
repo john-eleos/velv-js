@@ -3,7 +3,7 @@
   "info": {
     "title": "VelvPay source-verified agent read API",
     "version": "0.2.0-draft",
-    "description": "Conservative GET-only retrieval contracts traced to velv-backend production commit b81302575918fcd91fcdb48627dd4506c6dea161. GET does not mean side-effect-free: authentication counters, API logs and analytics may be written. The v1 locations GET is excluded because its handler may initialize a default location. This file does not prove deployment, feature enablement, credential issuance, live data shape stability or provider availability. Model records allow additional properties because persistence schemas can add fields; callers must expose only an explicit application allowlist."
+    "description": "Conservative GET-only retrieval contracts traced to velv-backend production commit b81302575918fcd91fcdb48627dd4506c6dea161. GET does not mean side-effect-free: authentication usage/rate counters, API logs, analytics and latency alerts may be written. The v1 locations GET is excluded because its handler may initialize a default location. This file does not prove deployment, feature enablement, credential issuance, live data shape stability or provider availability. Model records allow additional properties because persistence schemas can add fields; callers must expose only an explicit application allowlist."
   },
   "servers": [
     { "url": "https://api.velvpay.com" }
@@ -21,10 +21,13 @@
         "security": [{ "ApiKeyCiphertext": [], "PublicKey": [], "RequestReference": [] }],
         "responses": {
           "200": { "$ref": "#/components/responses/StorefrontProfile" },
-          "403": { "$ref": "#/components/responses/AuthError" },
+          "400": { "$ref": "#/components/responses/LegacyV1AuthError" },
+          "403": { "$ref": "#/components/responses/LegacyV1AuthError" },
           "404": { "$ref": "#/components/responses/ApiError" },
-          "422": { "$ref": "#/components/responses/ApiError" },
-          "503": { "$ref": "#/components/responses/ApiError" }
+          "422": { "$ref": "#/components/responses/LegacyV1AuthError" },
+          "429": { "$ref": "#/components/responses/GlobalRateLimitError" },
+          "500": { "$ref": "#/components/responses/HandlerError" },
+          "503": { "$ref": "#/components/responses/LegacyV1AuthError" }
         }
       }
     },
@@ -33,6 +36,8 @@
         "tags": ["Storefront v1"],
         "operationId": "listStorefrontProductsV1",
         "summary": "List products for the authenticated merchant",
+        "x-data-classification": "potential-customer-personal-data-and-merchant-tracking",
+        "x-downstream-field-policy": "explicit-allowlist-required",
         "security": [{ "ApiKeyCiphertext": [], "PublicKey": [], "RequestReference": [] }],
         "parameters": [
           { "$ref": "#/components/parameters/Page" },
@@ -43,9 +48,12 @@
         ],
         "responses": {
           "200": { "$ref": "#/components/responses/PaginatedRecords" },
-          "403": { "$ref": "#/components/responses/AuthError" },
-          "422": { "$ref": "#/components/responses/ApiError" },
-          "503": { "$ref": "#/components/responses/ApiError" }
+          "400": { "$ref": "#/components/responses/LegacyV1AuthError" },
+          "403": { "$ref": "#/components/responses/LegacyV1AuthError" },
+          "422": { "$ref": "#/components/responses/LegacyV1AuthError" },
+          "429": { "$ref": "#/components/responses/GlobalRateLimitError" },
+          "500": { "$ref": "#/components/responses/HandlerError" },
+          "503": { "$ref": "#/components/responses/LegacyV1AuthError" }
         }
       }
     },
@@ -54,13 +62,19 @@
         "tags": ["Storefront v1"],
         "operationId": "getStorefrontProductV1",
         "summary": "Read one merchant product",
+        "x-data-classification": "potential-customer-personal-data-and-merchant-tracking",
+        "x-downstream-field-policy": "explicit-allowlist-required",
         "security": [{ "ApiKeyCiphertext": [], "PublicKey": [], "RequestReference": [] }],
         "parameters": [{ "$ref": "#/components/parameters/ProductId" }],
         "responses": {
           "200": { "$ref": "#/components/responses/SingleRecord" },
-          "403": { "$ref": "#/components/responses/AuthError" },
+          "400": { "$ref": "#/components/responses/LegacyV1AuthError" },
+          "403": { "$ref": "#/components/responses/LegacyV1AuthError" },
           "404": { "$ref": "#/components/responses/ApiError" },
-          "503": { "$ref": "#/components/responses/ApiError" }
+          "422": { "$ref": "#/components/responses/LegacyV1AuthError" },
+          "429": { "$ref": "#/components/responses/GlobalRateLimitError" },
+          "500": { "$ref": "#/components/responses/HandlerError" },
+          "503": { "$ref": "#/components/responses/LegacyV1AuthError" }
         }
       }
     },
@@ -70,6 +84,7 @@
         "operationId": "listStorefrontInventoryV1",
         "summary": "List merchant storefront inventory records",
         "x-data-classification": "merchant-operations-confidential",
+        "x-downstream-field-policy": "explicit-allowlist-required",
         "security": [{ "ApiKeyCiphertext": [], "PublicKey": [], "RequestReference": [] }],
         "parameters": [
           { "name": "locationId", "in": "query", "schema": { "type": "string" } },
@@ -77,8 +92,12 @@
         ],
         "responses": {
           "200": { "$ref": "#/components/responses/RecordArray" },
-          "403": { "$ref": "#/components/responses/AuthError" },
-          "503": { "$ref": "#/components/responses/ApiError" }
+          "400": { "$ref": "#/components/responses/LegacyV1AuthError" },
+          "403": { "$ref": "#/components/responses/LegacyV1AuthError" },
+          "422": { "$ref": "#/components/responses/LegacyV1AuthError" },
+          "429": { "$ref": "#/components/responses/GlobalRateLimitError" },
+          "500": { "$ref": "#/components/responses/HandlerError" },
+          "503": { "$ref": "#/components/responses/LegacyV1AuthError" }
         }
       }
     },
@@ -88,6 +107,7 @@
         "operationId": "listStorefrontOrdersV1",
         "summary": "List merchant storefront orders",
         "x-data-classification": "merchant-commerce-confidential",
+        "x-downstream-field-policy": "explicit-allowlist-required",
         "security": [{ "ApiKeyCiphertext": [], "PublicKey": [], "RequestReference": [] }],
         "parameters": [
           { "$ref": "#/components/parameters/Page" },
@@ -99,8 +119,12 @@
         ],
         "responses": {
           "200": { "$ref": "#/components/responses/PaginatedRecords" },
-          "403": { "$ref": "#/components/responses/AuthError" },
-          "503": { "$ref": "#/components/responses/ApiError" }
+          "400": { "$ref": "#/components/responses/LegacyV1AuthError" },
+          "403": { "$ref": "#/components/responses/LegacyV1AuthError" },
+          "422": { "$ref": "#/components/responses/LegacyV1AuthError" },
+          "429": { "$ref": "#/components/responses/GlobalRateLimitError" },
+          "500": { "$ref": "#/components/responses/HandlerError" },
+          "503": { "$ref": "#/components/responses/LegacyV1AuthError" }
         }
       }
     },
@@ -110,13 +134,18 @@
         "operationId": "getStorefrontOrderV1",
         "summary": "Read one merchant storefront order",
         "x-data-classification": "merchant-commerce-confidential",
+        "x-downstream-field-policy": "explicit-allowlist-required",
         "security": [{ "ApiKeyCiphertext": [], "PublicKey": [], "RequestReference": [] }],
         "parameters": [{ "$ref": "#/components/parameters/OrderId" }],
         "responses": {
           "200": { "$ref": "#/components/responses/SingleRecord" },
-          "403": { "$ref": "#/components/responses/AuthError" },
+          "400": { "$ref": "#/components/responses/LegacyV1AuthError" },
+          "403": { "$ref": "#/components/responses/LegacyV1AuthError" },
           "404": { "$ref": "#/components/responses/ApiError" },
-          "503": { "$ref": "#/components/responses/ApiError" }
+          "422": { "$ref": "#/components/responses/LegacyV1AuthError" },
+          "429": { "$ref": "#/components/responses/GlobalRateLimitError" },
+          "500": { "$ref": "#/components/responses/HandlerError" },
+          "503": { "$ref": "#/components/responses/LegacyV1AuthError" }
         }
       }
     },
@@ -125,6 +154,8 @@
         "tags": ["Headless commerce v2"],
         "operationId": "listHeadlessCatalogV2",
         "summary": "List catalog items using a scoped headless credential",
+        "x-data-classification": "merchant-catalog-confidential",
+        "x-downstream-field-policy": "explicit-allowlist-required",
         "security": [{ "HeadlessBearer": [] }],
         "x-required-scope": "catalog:read",
         "parameters": [
@@ -138,8 +169,9 @@
           "200": { "$ref": "#/components/responses/PaginatedRecords" },
           "401": { "$ref": "#/components/responses/AuthError" },
           "403": { "$ref": "#/components/responses/AuthError" },
-          "429": { "$ref": "#/components/responses/ApiError" },
-          "503": { "$ref": "#/components/responses/ApiError" }
+          "429": { "$ref": "#/components/responses/AuthError" },
+          "500": { "$ref": "#/components/responses/HandlerError" },
+          "503": { "$ref": "#/components/responses/AuthError" }
         }
       }
     },
@@ -149,6 +181,7 @@
         "operationId": "listHeadlessOrdersV2",
         "summary": "List orders using a scoped headless credential",
         "x-data-classification": "merchant-commerce-confidential",
+        "x-downstream-field-policy": "explicit-allowlist-required",
         "security": [{ "HeadlessBearer": [] }],
         "x-required-scope": "orders:read",
         "parameters": [
@@ -163,8 +196,9 @@
           "200": { "$ref": "#/components/responses/PaginatedRecords" },
           "401": { "$ref": "#/components/responses/AuthError" },
           "403": { "$ref": "#/components/responses/AuthError" },
-          "429": { "$ref": "#/components/responses/ApiError" },
-          "503": { "$ref": "#/components/responses/ApiError" }
+          "429": { "$ref": "#/components/responses/AuthError" },
+          "500": { "$ref": "#/components/responses/HandlerError" },
+          "503": { "$ref": "#/components/responses/AuthError" }
         }
       }
     },
@@ -174,6 +208,7 @@
         "operationId": "getHeadlessOrderV2",
         "summary": "Read one order using a scoped headless credential",
         "x-data-classification": "merchant-commerce-confidential",
+        "x-downstream-field-policy": "explicit-allowlist-required",
         "security": [{ "HeadlessBearer": [] }],
         "x-required-scope": "orders:read",
         "parameters": [{ "$ref": "#/components/parameters/OrderId" }],
@@ -182,8 +217,9 @@
           "401": { "$ref": "#/components/responses/AuthError" },
           "403": { "$ref": "#/components/responses/AuthError" },
           "404": { "$ref": "#/components/responses/ApiError" },
-          "429": { "$ref": "#/components/responses/ApiError" },
-          "503": { "$ref": "#/components/responses/ApiError" }
+          "429": { "$ref": "#/components/responses/AuthError" },
+          "500": { "$ref": "#/components/responses/HandlerError" },
+          "503": { "$ref": "#/components/responses/AuthError" }
         }
       }
     },
@@ -193,6 +229,7 @@
         "operationId": "listHeadlessCustomersV2",
         "summary": "List commerce customers using a scoped headless credential",
         "x-data-classification": "customer-personal-data",
+        "x-downstream-field-policy": "explicit-allowlist-required",
         "security": [{ "HeadlessBearer": [] }],
         "x-required-scope": "customers:read",
         "parameters": [
@@ -204,8 +241,9 @@
           "200": { "$ref": "#/components/responses/PaginatedRecords" },
           "401": { "$ref": "#/components/responses/AuthError" },
           "403": { "$ref": "#/components/responses/AuthError" },
-          "429": { "$ref": "#/components/responses/ApiError" },
-          "503": { "$ref": "#/components/responses/ApiError" }
+          "429": { "$ref": "#/components/responses/AuthError" },
+          "500": { "$ref": "#/components/responses/HandlerError" },
+          "503": { "$ref": "#/components/responses/AuthError" }
         }
       }
     },
@@ -215,6 +253,7 @@
         "operationId": "listHeadlessLocationsV2",
         "summary": "List commerce locations using a scoped headless credential",
         "x-data-classification": "merchant-operations-confidential",
+        "x-downstream-field-policy": "explicit-allowlist-required",
         "security": [{ "HeadlessBearer": [] }],
         "x-required-scope": "locations:read",
         "parameters": [
@@ -226,8 +265,9 @@
           "200": { "$ref": "#/components/responses/PaginatedRecords" },
           "401": { "$ref": "#/components/responses/AuthError" },
           "403": { "$ref": "#/components/responses/AuthError" },
-          "429": { "$ref": "#/components/responses/ApiError" },
-          "503": { "$ref": "#/components/responses/ApiError" }
+          "429": { "$ref": "#/components/responses/AuthError" },
+          "500": { "$ref": "#/components/responses/HandlerError" },
+          "503": { "$ref": "#/components/responses/AuthError" }
         }
       }
     },
@@ -237,6 +277,7 @@
         "operationId": "listHeadlessInventoryV2",
         "summary": "List commerce inventory using a scoped headless credential",
         "x-data-classification": "merchant-operations-confidential",
+        "x-downstream-field-policy": "explicit-allowlist-required",
         "security": [{ "HeadlessBearer": [] }],
         "x-required-scope": "inventory:read",
         "parameters": [
@@ -249,8 +290,9 @@
           "200": { "$ref": "#/components/responses/PaginatedRecords" },
           "401": { "$ref": "#/components/responses/AuthError" },
           "403": { "$ref": "#/components/responses/AuthError" },
-          "429": { "$ref": "#/components/responses/ApiError" },
-          "503": { "$ref": "#/components/responses/ApiError" }
+          "429": { "$ref": "#/components/responses/AuthError" },
+          "500": { "$ref": "#/components/responses/HandlerError" },
+          "503": { "$ref": "#/components/responses/AuthError" }
         }
       }
     }
@@ -295,6 +337,22 @@
           }
         },
         "additionalProperties": true
+      },
+      "LegacyV1ErrorEnvelope": {
+        "type": "object",
+        "required": ["status", "err"],
+        "properties": {
+          "status": { "const": "error" },
+          "reason": { "type": "string" },
+          "err": { "type": "string" }
+        },
+        "additionalProperties": true
+      },
+      "GlobalRateLimitEnvelope": {
+        "type": "object",
+        "required": ["error"],
+        "properties": { "error": { "type": "string" } },
+        "additionalProperties": false
       }
     },
     "responses": {
@@ -314,8 +372,11 @@
         "description": "Paginated record envelope",
         "content": { "application/json": { "schema": { "type": "object", "required": ["status", "data", "meta"], "properties": { "status": { "const": "success" }, "data": { "type": "array", "items": { "$ref": "#/components/schemas/OpenRecord" } }, "meta": { "$ref": "#/components/schemas/Meta" } }, "additionalProperties": false } } }
       },
-      "AuthError": { "description": "Authentication, account, scope or feature denial", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } } } },
-      "ApiError": { "description": "Documented error envelope; v1 authentication middleware may use a legacy status/reason/err shape", "content": { "application/json": { "schema": { "type": "object", "additionalProperties": true } } } }
+      "LegacyV1AuthError": { "description": "Legacy v1 authentication/account denial with status and err; reason is absent from the blacklisted-account response", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/LegacyV1ErrorEnvelope" } } } },
+      "GlobalRateLimitError": { "description": "Server-level /api rate-limit response", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/GlobalRateLimitEnvelope" } } } },
+      "AuthError": { "description": "Structured headless authentication, account, scope, feature, rate-limit or availability denial", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } } } },
+      "HandlerError": { "description": "Structured storefront/headless handler failure", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorEnvelope" } } } },
+      "ApiError": { "description": "Operation-specific error envelope", "content": { "application/json": { "schema": { "type": "object", "additionalProperties": true } } } }
     }
   }
 }

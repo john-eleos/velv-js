@@ -65,7 +65,9 @@ Use the v0.2 read OpenAPI and the smallest required scope:
 
 Headless credentials are independently revocable bearer secrets beginning with `vch_`. Source enforces credential status/expiry, merchant activity, feature policy and a per-credential minute counter. Exact issuance workflow, merchant enablement and deployed limits were not verified.
 
-These are GET contracts, not a promise of zero writes: authentication usage/rate counters, API logs and analytics can still change. Order/customer/location/inventory responses are marked with data-classification extensions in OpenAPI and must not be forwarded unfiltered.
+These are GET contracts, not a promise of zero writes: authentication usage/rate counters, API logs, analytics and latency alerts can still change. Every operation returning full persistence records has machine-readable `x-data-classification` and `x-downstream-field-policy: explicit-allowlist-required` metadata and must not be forwarded unfiltered.
+
+In particular, the v1 product handler returns full `PaymentLink` records that may contain customer contact name, email, phone/address and merchant tracking fields. The headless catalog returns full item and variant records that may contain tenant identifiers, SKUs and barcodes. Those fields are source-visible response possibilities, not an approved downstream schema.
 
 Observed headless authentication failures use the structured error envelope and include:
 
@@ -76,7 +78,7 @@ Observed headless authentication failures use the structured error envelope and 
 | 429 | per-credential minute counter exceeded |
 | 503 | authentication dependency unavailable |
 
-The v1 merchant middleware instead uses legacy response shapes: 422 for missing authentication headers, 403 for credential/account denial, 400 for an IP-allowlist mismatch in the inspected path, and 503 when authentication dependencies fail. Consumers must preserve the HTTP status and tolerate both legacy and structured error envelopes.
+The v1 merchant middleware instead uses legacy response shapes: 422 for missing authentication headers; 403 for an unknown/inactive merchant, IP-allowlist mismatch or invalid ciphertext; 400 for a blacklisted account; and 503 when authentication dependencies fail. The server-level `/api` limiter can return 429, and the storefront wrapper can return a structured 500 handler error. Consumers must preserve the HTTP status and tolerate the documented legacy, structured and global-rate-limit envelopes.
 
 ## Amount and status boundaries
 

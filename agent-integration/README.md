@@ -28,7 +28,7 @@ It is documentation and an offline evaluation harness. It is not a live API cert
 - `AGENTS.md` — concise rules for coding agents working in this directory.
 - `examples/collection.curl.sh` — curl examples with credential placeholders.
 - `examples/collection.ts` — matching server-side TypeScript example.
-- `examples/catalog.curl.sh` and `examples/catalog.ts` — read-only headless catalog examples.
+- `examples/catalog.curl.sh` and `examples/catalog.ts` — GET-only headless catalog retrieval examples; authentication usage counters, API logs, analytics and latency alerts may still be written.
 - `mock/collection-evaluator.cjs` — dependency-light, serialized in-process implementation used only by offline tests; it is not concurrency- or crash-safe.
 - `test/collection-evaluator.test.cjs` — synthetic tests for authentication, initialisation, failure, lookup and duplicate notifications.
 - `test/documentation-index.test.cjs` — offline inventory, OpenAPI, feed and navigation checks.

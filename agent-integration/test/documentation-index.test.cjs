@@ -4,6 +4,7 @@ const test = require('node:test')
 const assert = require('node:assert/strict')
 const fs = require('node:fs')
 const path = require('node:path')
+const { spawnSync } = require('node:child_process')
 
 const root = path.join(__dirname, '..')
 const readJson = relative => JSON.parse(fs.readFileSync(path.join(root, relative), 'utf8'))
@@ -15,6 +16,8 @@ test('capability manifest inventories all 91 source-routed merchant endpoints', 
 
   assert.equal(manifest.authoritativeSource.commit, 'b81302575918fcd91fcdb48627dd4506c6dea161')
   assert.equal(manifest.authoritativeSource.deploymentVerified, false)
+  assert.equal(manifest.authoritativeSource.remoteHeadVerifiedOn, '2026-10-09')
+  assert.equal(Object.hasOwn(manifest.authoritativeSource, 'remoteHeadVerifiedAt'), false)
   assert.equal(manifest.publicDocumentation.technicalReferenceObserved, false)
   assert.equal(manifest.groups.length, 12)
   assert.equal(routes.length, 91)
@@ -58,19 +61,71 @@ test('v0.2 OpenAPI is GET-only and declares both authentication families', () =>
   assert.equal(contract.paths['/api/v2/headless/customers'].get['x-data-classification'], 'customer-personal-data')
 })
 
-test('documentation feeds contain only the two real documentation revisions', () => {
+test('v1 and v2 error contracts match their distinct middleware envelopes', () => {
+  const contract = readJson('openapi/velvpay-agent-read-api-v0.2.0.json')
+  const operations = Object.entries(contract.paths).map(([routePath, item]) => ({ routePath, operation: item.get }))
+
+  for (const { routePath, operation } of operations.filter(item => item.routePath.startsWith('/api/v1/'))) {
+    for (const status of ['400', '403', '422', '503']) {
+      assert.equal(operation.responses[status].$ref, '#/components/responses/LegacyV1AuthError', `${routePath} ${status}`)
+    }
+    assert.equal(operation.responses['429'].$ref, '#/components/responses/GlobalRateLimitError', `${routePath} 429`)
+    assert.equal(operation.responses['500'].$ref, '#/components/responses/HandlerError', `${routePath} 500`)
+  }
+
+  for (const { routePath, operation } of operations.filter(item => item.routePath.startsWith('/api/v2/'))) {
+    for (const status of ['401', '403', '429', '503']) {
+      assert.equal(operation.responses[status].$ref, '#/components/responses/AuthError', `${routePath} ${status}`)
+    }
+    assert.equal(operation.responses['500'].$ref, '#/components/responses/HandlerError', `${routePath} 500`)
+  }
+  assert.deepEqual(contract.components.schemas.LegacyV1ErrorEnvelope.required, ['status', 'err'])
+})
+
+test('every full-record response declares classification and an allowlist policy', () => {
+  const contract = readJson('openapi/velvpay-agent-read-api-v0.2.0.json')
+  const fullRecordRefs = new Set([
+    '#/components/responses/SingleRecord',
+    '#/components/responses/RecordArray',
+    '#/components/responses/PaginatedRecords'
+  ])
+
+  for (const [routePath, pathItem] of Object.entries(contract.paths)) {
+    const operation = pathItem.get
+    if (!fullRecordRefs.has(operation.responses['200'].$ref)) continue
+    assert.ok(operation['x-data-classification'], `${routePath} lacks x-data-classification`)
+    assert.equal(operation['x-downstream-field-policy'], 'explicit-allowlist-required', `${routePath} lacks allowlist policy`)
+  }
+})
+
+test('documentation feeds contain only the evidence-backed public draft revision', () => {
   const feed = readJson('feeds/releases.json')
   const atom = fs.readFileSync(path.join(root, 'feeds/releases.atom'), 'utf8')
 
   assert.equal(feed.version, 'https://jsonfeed.org/version/1.1')
-  assert.deepEqual(feed.items.map(item => item.id), [
-    'urn:velvpay:agent-docs:0.2.0-draft',
-    'urn:velvpay:agent-docs:0.1.0'
-  ])
-  assert.equal(feed.items[1]._documentation_commit, 'e20d1cf0ef1efbcc07db8b542389b7800cb8c926')
+  assert.deepEqual(feed.items.map(item => item.id), ['urn:velvpay:agent-docs:0.1.0'])
+  assert.equal(feed.items[0]._documentation_commit, 'e20d1cf0ef1efbcc07db8b542389b7800cb8c926')
+  assert.equal(feed.items[0]._status, 'public-draft-pr')
+  assert.equal(feed.items[0].date_published, '2026-10-09T19:55:08Z')
+  assert.equal(feed.items[0].date_modified, '2026-10-09T19:55:27Z')
   assert.match(feed.description, /not API availability/)
-  assert.equal((atom.match(/<entry>/g) || []).length, 2)
-  assert.match(atom, /urn:velvpay:agent-docs:0\.2\.0-draft/)
+  assert.equal((atom.match(/<entry>/g) || []).length, 1)
+  assert.doesNotMatch(atom, /0\.2\.0-draft/)
+  assert.match(atom, /2026-10-09T19:55:08Z/)
+})
+
+test('catalog curl example cannot contact a live host without explicit inputs', () => {
+  const script = fs.readFileSync(path.join(root, 'examples/catalog.curl.sh'), 'utf8')
+  const result = spawnSync('sh', ['examples/catalog.curl.sh'], {
+    cwd: root,
+    env: { PATH: process.env.PATH },
+    encoding: 'utf8'
+  })
+
+  assert.equal(script.includes('BASE_URL:-https://api.velvpay.com'), false)
+  assert.equal(script.includes('HEADLESS_BEARER:-'), false)
+  assert.notEqual(result.status, 0)
+  assert.match(result.stderr, /BASE_URL/)
 })
 
 test('llms index links capability, OpenAPI and static subscription artifacts', () => {

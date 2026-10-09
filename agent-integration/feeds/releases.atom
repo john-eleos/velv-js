@@ -2,21 +2,15 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
   <title>VelvPay agent documentation revisions</title>
   <id>urn:velvpay:agent-docs</id>
-  <updated>2026-10-09T20:02:35Z</updated>
+  <updated>2026-10-09T19:55:27Z</updated>
   <link rel="self" href="./releases.atom" />
   <subtitle>Static documentation revision feed; not API availability, deployment or payment-execution evidence.</subtitle>
   <entry>
-    <title>0.2.0 draft: source inventory and agent read contracts</title>
-    <id>urn:velvpay:agent-docs:0.2.0-draft</id>
-    <updated>2026-10-09T20:02:35Z</updated>
-    <link href="../README.md" />
-    <summary>Adds a 91-route source inventory, typed capability classifications, conservative storefront/headless read OpenAPI, safe catalog examples, and static feed indexes. Postman endpoint comparison and live deployment remain unverified.</summary>
-  </entry>
-  <entry>
-    <title>0.1.0: bounded NGN collection agent kit</title>
+    <title>0.1.0 public draft: bounded NGN collection agent kit</title>
     <id>urn:velvpay:agent-docs:0.1.0</id>
-    <updated>2026-10-09T19:51:01Z</updated>
-    <link href="../README.md" />
-    <summary>Introduces the source-verified NGN collection/status contract, examples and nine-test offline evaluator at documentation commit e20d1cf0ef1efbcc07db8b542389b7800cb8c926.</summary>
+    <published>2026-10-09T19:55:08Z</published>
+    <updated>2026-10-09T19:55:27Z</updated>
+    <link href="https://github.com/john-eleos/velv-js/pull/5" />
+    <summary>Public draft PR #5 introduces the source-verified NGN collection/status contract, examples and nine-test offline evaluator. This is not a package release or live API certification.</summary>
   </entry>
 </feed>

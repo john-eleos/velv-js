@@ -73,7 +73,7 @@ The v0.2 draft inventories every route registered in `controller/api.routes.js` 
 
 The inventory separates route presence from a publishable execution contract. Provider-backed money movement, feature-gated capabilities, end-user-session routes, outbound side-effect helpers and routes needing further safety or authorization review remain typed as unverified, restricted or withheld. They are not promoted into generated execution examples.
 
-The v0.2 OpenAPI expansion is GET-only, not side-effect-free: authentication counters, request logs and analytics may still be written. It covers six v1 storefront retrievals and six scoped v2 headless-commerce retrievals. The v1 locations GET is excluded because its handler may initialize a default location. Source anchors are `controller/api.routes.js`, `controller/apiServices/storefront/`, `middlewares/apiService.js` and `middlewares/headlessCommerce.js`. Response records allow unknown model properties rather than inventing a stable persistence-field guarantee, and sensitive commerce/customer operations carry data-classification extensions.
+The v0.2 OpenAPI expansion is GET-only, not side-effect-free: authentication usage/rate counters, request logs, analytics and latency alerts may still be written. It covers six v1 storefront retrievals and six scoped v2 headless-commerce retrievals. The v1 locations GET is excluded because its handler may initialize a default location. Source anchors are `controller/api.routes.js`, `controller/apiServices/storefront/`, `middlewares/apiService.js` and `middlewares/headlessCommerce.js`. Response records allow unknown model properties rather than inventing a stable persistence-field guarantee, and every full-record response carries machine-readable data-classification and explicit-downstream-allowlist metadata.
 
 The official landing page `https://velvpay.com/apidocumentation` was readable and linked the expected Postman technical reference. The linked reference `https://documenter.getpostman.com/view/36526309/2sA3XY7J6K` timed out, so endpoint-level parity with that reference remains unverified and is stated as a gap in both inventory formats.
 
@@ -92,8 +92,8 @@ Commands and results:
 
 ```text
 npm test
-  14 tests, 14 passed, 0 failed, 0 skipped, 0 todo
-  Node test-runner duration: 57.850375 ms
+  17 tests, 17 passed, 0 failed, 0 skipped, 0 todo
+  Node test-runner duration: 48.67425 ms
 
 ../node_modules/.bin/tsc --noEmit --target ES2022 --module Node16 --moduleResolution Node16 --esModuleInterop --skipLibCheck examples/collection.ts examples/catalog.ts
   PASS (exit 0)
@@ -114,7 +114,7 @@ trailing-whitespace and final-newline scans over every kit file
   PASS
 ```
 
-The first nine tests comprise the six accessible starter behaviours plus failed initialisation, duplicate final notification and bounded collection OpenAPI coverage. Five new tests verify the 91-route inventory, OpenAPI declarations for every `contract_verified` capability, the read-only v0.2 operation set, the two real documentation revisions in JSON Feed/Atom, and `llms.txt` navigation. The evaluator injects its fetch function; it did not contact VelvPay or any provider.
+The first nine tests comprise the six accessible starter behaviours plus failed initialisation, duplicate final notification and bounded collection OpenAPI coverage. The expanded tests verify the 91-route inventory, OpenAPI declarations for every `contract_verified` capability, the GET-only v0.2 operation set, data-classification/allowlist metadata, the evidence-backed public draft revision in JSON Feed/Atom, inert curl defaults and `llms.txt` navigation. The evaluator injects its fetch function; it did not contact VelvPay or any provider.
 
 No OpenAPI validator was installed in the isolated SDK clone, and installing new tooling was outside scope. The contract passed JSON parsing plus focused structural assertions, not a third-party full-spec lint.
 
@@ -131,6 +131,16 @@ The prompt-only adversarial review was repeated for the v0.2 expansion:
 - Saboteur finding, resolved: the first draft called every GET contract read-only, but the v1 locations GET may initialize a default location. That route is now withheld from OpenAPI, and the remaining specification is labeled GET-only rather than side-effect-free because authentication counters, logs and analytics may still be written.
 - New-hire finding, resolved: route classifications inherit a group default, but the resolution rule was implicit. The manifest now states the override rule and tests every route's effective classification against the declared type set.
 - Security-auditor finding, resolved: open persistence records could hide customer or merchant-sensitive fields. Relevant OpenAPI operations now carry data-classification extensions, and agent instructions require an explicit downstream allowlist.
+
+The independent review of local commit `0c59ad92e351aed65c1b18db8e6c0e7aeda351a1` then identified five publication blockers, all corrected in the following local review commit: live-host defaults were removed from the curl example; v1 legacy and v2 structured error schemas were separated; every full-record response received machine-readable classification and allowlist requirements; residual GET/read-only wording was corrected with counter/log/analytics/latency side effects; and unsubstantiated feed/source timestamps were replaced with evidence-backed provenance.
+
+## Revision timestamp provenance
+
+- Backend source commit time: `2026-10-08T13:47:03+01:00`, from Git commit `b81302575918fcd91fcdb48627dd4506c6dea161`.
+- Backend remote-head verification: date `2026-10-09`; the exact time was not retained, so the capability manifest deliberately uses `remoteHeadVerifiedOn` rather than fabricating a timestamp.
+- Public v0.1 documentation commit time: `2026-10-09T20:51:01+01:00`, from Git commit `e20d1cf0ef1efbcc07db8b542389b7800cb8c926`.
+- Public draft PR #5 creation: `2026-10-09T19:55:08Z`; last observed update: `2026-10-09T19:55:27Z`, from GitHub's PR metadata. These are the JSON Feed/Atom publication timestamps.
+- The v0.2 expansion is local and unpublished, so it has no feed entry. A future feed item must use publication-system evidence rather than the local file or commit creation time.
 
 Verdict for v0.1: **CLEAN for local documentation review, with notes**. The v0.2 expansion is **review required**. A verified deployed SHA is not required for truthful source-scoped publication because no live-state claim is made, but it remains required before making a live-state claim.
 
