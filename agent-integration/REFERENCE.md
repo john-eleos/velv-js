@@ -1,6 +1,6 @@
 # NGN collection reference
 
-> **Historical source reference and offline evaluation only.** This reference describes the contract in `openapi/velvpay-ngn-collection-v0.1.0.json` as checked against `velv-backend` commit `94289a4d9cc5f1bab5f3b714c77496c81cc25cf3`. It does not certify the currently deployed backend, a connected sandbox lifecycle or provider behaviour.
+> **Production-source verified; live deployment not independently verified.** This reference describes the contract in `openapi/velvpay-ngn-collection-v0.1.0.json` as checked against the authoritative `velv-backend` `production` branch at commit `b81302575918fcd91fcdb48627dd4506c6dea161` (commit date 2026-10-08T13:47:03+01:00; remote head verified 2026-10-09 UTC). It does not certify the code currently running on a host, a connected sandbox lifecycle or provider behaviour.
 
 ## Authentication
 

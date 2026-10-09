@@ -1,8 +1,8 @@
 # Agent instructions: NGN collection kit
 
-- This directory is a historical source reference and offline evaluation pinned to backend commit `94289a4d9cc5f1bab5f3b714c77496c81cc25cf3`; it is not current-deployment or sandbox certification.
+- This directory is source-verified against the authoritative backend `production` branch at commit `b81302575918fcd91fcdb48627dd4506c6dea161` (commit date 2026-10-08; remote head verified 2026-10-09 UTC). It is an offline evaluation, not live-deployment or sandbox certification.
 - Scope is the two-endpoint NGN collection/status flow in `openapi/velvpay-ngn-collection-v0.1.0.json`.
-- Treat backend commit `94289a4d9cc5f1bab5f3b714c77496c81cc25cf3` as the source snapshot for this version; re-audit before publishing against another commit.
+- Treat backend `production` commit `b81302575918fcd91fcdb48627dd4506c6dea161` as the source snapshot for this version; re-audit before publishing against another commit.
 - Generate v1 authentication only on a trusted server. Never expose or log the secret key, encryption key, generated `api-key`, webhook token or full authorization header.
 - Send integer kobo with `isNaira: false`. Do not add a currency field to this endpoint.
 - Treat account initialisation as pending. Only a verified transaction record in a final paid state can drive fulfilment.

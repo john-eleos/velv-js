@@ -1,6 +1,6 @@
 # VelvPay NGN collection agent kit v0.1.0
 
-> Historical source reference and offline evaluation pinned to velv-backend commit 94289a4d9cc5f1bab5f3b714c77496c81cc25cf3. Documentation index only; not current-deployment, sandbox, provider, quality, safety, compatibility, availability or ranking evidence.
+> Source-verified against the velv-backend production branch at commit b81302575918fcd91fcdb48627dd4506c6dea161 (commit date 2026-10-08; remote head verified 2026-10-09 UTC). Offline documentation index only; not live-deployment, sandbox, provider, quality, safety, compatibility, availability or ranking evidence.
 
 - Overview: ./README.md
 - Agent instructions: ./AGENTS.md

@@ -3,7 +3,7 @@
   "info": {
     "title": "VelvPay bounded NGN collection API",
     "version": "0.1.0",
-    "description": "Historical source reference and offline evaluation for one NGN temporary-account collection flow, pinned to velv-backend commit 94289a4d9cc5f1bab5f3b714c77496c81cc25cf3. This document does not certify the currently deployed backend, a connected sandbox lifecycle, public availability or provider behaviour."
+    "description": "Source-verified contract and offline evaluation for one NGN temporary-account collection flow, checked against the authoritative velv-backend production branch at commit b81302575918fcd91fcdb48627dd4506c6dea161 (commit date 2026-10-08T13:47:03+01:00; remote head verified 2026-10-09 UTC). This document does not certify the code currently running on a host, a connected sandbox lifecycle, public availability or provider behaviour."
   },
   "servers": [
     {

@@ -2,7 +2,7 @@
 
 Version: **0.1.0**
 
-> **Historical source reference and offline evaluation only.** This kit is pinned to `velv-backend` commit `94289a4d9cc5f1bab5f3b714c77496c81cc25cf3`. It is not evidence of the currently deployed backend, a connected sandbox lifecycle, provider availability or production certification.
+> **Production-source verified; live deployment not independently verified.** This kit was checked against the authoritative `velv-backend` `production` branch at commit `b81302575918fcd91fcdb48627dd4506c6dea161` (commit date 2026-10-08T13:47:03+01:00; remote head verified 2026-10-09 UTC). It is an offline evaluation, not evidence of the code currently running on a host, a connected sandbox lifecycle, provider availability or production certification.
 
 This bounded kit helps a server-side coding agent implement one VelvPay flow:
 
