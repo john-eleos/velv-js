@@ -1,6 +1,6 @@
 # NGN collection reference
 
-This reference describes the contract in `openapi/velvpay-ngn-collection-v0.1.0.json`. It was checked offline against `velv-backend` commit `94289a4d9cc5f1bab5f3b714c77496c81cc25cf3`.
+> **Historical source reference and offline evaluation only.** This reference describes the contract in `openapi/velvpay-ngn-collection-v0.1.0.json` as checked against `velv-backend` commit `94289a4d9cc5f1bab5f3b714c77496c81cc25cf3`. It does not certify the currently deployed backend, a connected sandbox lifecycle or provider behaviour.
 
 ## Authentication
 
@@ -67,7 +67,7 @@ GET /api/v1/service/payment/collection/transaction/details?transaction_id=<value
 
 The bounded contract requires `transaction_id`, even though the backend also exposes an unpaginated list/filter mode when it is omitted. That list mode is outside this kit.
 
-Do not send `send_webhook`. In the audited controller, any present query-string value is truthy, including the strings `false` and `undefined`, and can enqueue a webhook. A read-only status check should have no notification side effect.
+Do not send `send_webhook`. In the audited controller, any present query-string value is truthy, including the strings `false` and `undefined`, and can enqueue a webhook. This produces a lookup without webhook delivery, not a side-effect-free or read-only request: the audited controller still writes an activity log and emits an analytics event.
 
 Successful lookup:
 
@@ -110,7 +110,7 @@ Process final notifications using a durable terminal-transition guard keyed by `
 - `amount` matches the expected integer kobo amount; and
 - the transition has not already been applied.
 
-The mock evaluator uses an in-memory map only to demonstrate behaviour. It maps both `confirmed` and `successful` to one semantic `paid` terminal state, absorbs equivalent repeats and refuses to apply a conflicting later terminal state. Production needs a unique database constraint or atomic compare-and-set in the same durable workflow as the order transition.
+The mock evaluator uses an in-memory map only to demonstrate serialized, single-process behaviour. It maps both `confirmed` and `successful` to one semantic `paid` terminal state, absorbs equivalent repeats and refuses to apply a conflicting later terminal state. It does not model concurrent handlers, process crashes, restarts or atomic persistence. Production needs a unique database constraint or atomic compare-and-set in the same durable workflow as the order transition.
 
 ## Error behaviour
 

@@ -144,6 +144,8 @@ async function acceptFinalNotification({
   processedEvents,
   applyTransition
 }) {
+  // Offline demonstration only: callers are serialized in one process. This
+  // Map is not durable, atomic, concurrency-safe or crash/restart-safe.
   if (!verifyStaticWebhookBearer(authorization, expectedToken)) {
     const error = new Error('invalid webhook authorization')
     error.status = 401

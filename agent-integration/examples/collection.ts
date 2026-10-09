@@ -1,5 +1,8 @@
 import CryptoJS from 'crypto-js'
 
+// Historical source reference/offline evaluation pinned to velv-backend commit
+// 94289a4d9cc5f1bab5f3b714c77496c81cc25cf3. Not deployment or sandbox proof.
+
 type Credentials = {
   publicKey: string
   secretKey: string
@@ -127,7 +130,8 @@ export async function getNgnCollectionStatus({
   )
 
   // Deliberately do not add send_webhook. In the audited backend, even the
-  // query-string text "false" can trigger a notification enqueue.
+  // query-string text "false" can trigger a notification enqueue. This avoids
+  // webhook delivery, but the backend still records activity and analytics.
   const response = await fetch(url, {
     method: 'GET',
     headers: buildV1Headers(credentials, requestReference)

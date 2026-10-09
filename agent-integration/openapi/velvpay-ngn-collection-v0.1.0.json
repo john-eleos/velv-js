@@ -3,7 +3,7 @@
   "info": {
     "title": "VelvPay bounded NGN collection API",
     "version": "0.1.0",
-    "description": "Source-aligned contract for one NGN temporary-account collection flow. Offline-reviewed against velv-backend commit 94289a4d9cc5f1bab5f3b714c77496c81cc25cf3; deployed availability and provider behaviour are not certified by this document."
+    "description": "Historical source reference and offline evaluation for one NGN temporary-account collection flow, pinned to velv-backend commit 94289a4d9cc5f1bab5f3b714c77496c81cc25cf3. This document does not certify the currently deployed backend, a connected sandbox lifecycle, public availability or provider behaviour."
   },
   "servers": [
     {
@@ -14,7 +14,7 @@
   "tags": [
     {
       "name": "NGN collection",
-      "description": "Fixed-amount temporary-account initialisation and read-only status lookup."
+      "description": "Fixed-amount temporary-account initialisation and status lookup without webhook delivery. Lookup still produces backend activity logs and analytics."
     }
   ],
   "paths": {
@@ -86,7 +86,7 @@
       "get": {
         "operationId": "getNgnCollectionStatus",
         "summary": "Read one NGN collection transaction",
-        "description": "Looks up the stored transaction by VelvPay transaction ID or the merchant reference stored in reference-id during creation. This bounded operation deliberately omits send_webhook so lookup remains read-only.",
+        "description": "Looks up the stored transaction by VelvPay transaction ID or the merchant reference stored in reference-id during creation. This bounded operation deliberately omits send_webhook, so it does not request webhook delivery. It is not side-effect-free: the audited controller still writes an activity log and emits an analytics event.",
         "tags": ["NGN collection"],
         "security": [
           {

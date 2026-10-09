@@ -2,6 +2,8 @@
 
 Prepared: 2026-10-09 UTC
 
+> **Historical source reference and offline evaluation only.** This evidence is pinned to backend commit `94289a4d9cc5f1bab5f3b714c77496c81cc25cf3`; it does not identify or certify the currently deployed backend or a connected sandbox lifecycle.
+
 ## Source snapshots
 
 Canonical backend repository: `velv-backend`
@@ -61,6 +63,7 @@ Backend limitations surfaced by source review:
 - the test-mode create branch returns a synthetic account before persisting a transaction, so an end-to-end create-then-status sandbox lifecycle is not established by source or the offline mocks;
 - the controller persists a pending transaction before its provider call and does not mark it failed on provider rejection/exception, so a 400/500 create response can coexist with a pending record;
 - the details controller can enqueue a webhook for any present `send_webhook` query-string value, including textual `false` or `undefined`.
+- omitting `send_webhook` prevents requested webhook delivery but does not make lookup read-only: the details controller writes an activity log and tracks an analytics event.
 
 ## Offline verification
 
@@ -78,7 +81,7 @@ Commands and results:
 ```text
 npm test
   9 tests, 9 passed, 0 failed, 0 skipped, 0 todo
-  Node test-runner duration: 55.580416 ms
+  Node test-runner duration: 51.185958 ms
 
 ../node_modules/.bin/tsc --noEmit --target ES2022 --module Node16 --moduleResolution Node16 --esModuleInterop --skipLibCheck examples/collection.ts
   PASS (exit 0)
@@ -86,8 +89,8 @@ npm test
 sh -n examples/collection.curl.sh
   PASS (exit 0)
 
-node -e "JSON.parse(...); assert RateLimited response exists"
-  OpenAPI JSON parse/429 structure: PASS
+node -e "JSON.parse(...); assert historical boundary exists"
+  OpenAPI historical-boundary structure: PASS
 
 git diff --cached --check
   PASS (exit 0 over the complete staged kit)
@@ -102,13 +105,24 @@ No OpenAPI validator was installed in the isolated SDK clone, and installing new
 
 ## Adversarial self-review
 
-The repository governance skill asks for `independent-reviewer`, but no such local skill or reviewer tool was available in this execution environment. The available `adversarial-reviewer` skill's primary preserved source was also missing, so its documented prompt-only fallback was used against every file in this directory. This is a structured self-review, not independent approval.
+The repository governance skill asks for `independent-reviewer`, but no such local skill or reviewer tool was available in the original execution environment. The available `adversarial-reviewer` skill's primary preserved source was also missing, so its documented prompt-only fallback was used against every file in this directory. A separate independent review subsequently ran the nine offline tests and accepted the kit only as explicitly historical, source-pinned and mock documentation; this correction commit applies that review's requested boundaries.
 
 - Saboteur finding, resolved: keying idempotency by transaction plus raw status could apply both `confirmed` and `successful` as separate paid transitions. The evaluator now guards the single terminal transition by transaction ID and collapses both aliases to semantic `paid`; conflicting later terminal states are not applied.
 - New-hire finding, retained as a note: the publication example and offline evaluator intentionally duplicate a small amount of request construction. Their shared paths and invariants are contract-tested, but maintainers must keep both aligned when the source contract changes.
 - Security-auditor finding, mitigated and retained as a note: shell-expanded headers can be visible to local process inspection. The curl file now forbids live-secret use and directs production integrations to a backend client with secret-manager integration.
 
-Verdict: **CLEAN for local documentation review, with notes**. Publication remains blocked on exact-deployment re-audit and independent review.
+Verdict: **CLEAN for local documentation review, with notes**. The independent review accepted only the historical/mock scope and requested the corrections now applied. Publication remains blocked on exact-deployment re-audit and review/approval of the final correction commit.
+
+## Read-only deployment-evidence inspection
+
+Local records do not establish the currently deployed backend SHA:
+
+- the local remote-tracking ref `origin/production` points to `94289a4d9cc5f1bab5f3b714c77496c81cc25cf3`, but a tracking ref records repository state, not an executed deployment;
+- the local `deployment-reports` ref contains no report mentioning `94289a4d9cc5f1bab5f3b714c77496c81cc25cf3`;
+- its latest stored report, `reports/deployment-report-velv-backend-35377298340.txt`, attempted target `1d333a0c0c1ee7ab127dedf65e379a70007e531c` on 2026-09-18 and ended with `Deployment exit code: 1`;
+- no later successful deployment report, host-side release manifest, health response containing a build SHA, or immutable artifact digest was available locally.
+
+Therefore `94289a4d9cc5f1bab5f3b714c77496c81cc25cf3` remains the intended production-branch source snapshot used for this historical review, not a verified deployed SHA. Exact deployment evidence is still missing.
 
 ## Unresolved production checks
 

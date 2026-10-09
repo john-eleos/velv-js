@@ -1,6 +1,8 @@
 #!/usr/bin/env sh
 set -eu
 
+# Historical source reference/offline evaluation pinned to backend commit
+# 94289a4d9cc5f1bab5f3b714c77496c81cc25cf3. Not deployment or sandbox proof.
 # Documentation example only. Generate API_KEY_CIPHERTEXT on a trusted server as:
 # CryptoJS.AES.encrypt(SECRET_KEY + PUBLIC_KEY + REQUEST_REFERENCE, ENCRYPTION_KEY)
 # Do not use live secrets with this shell example: expanded header arguments may
@@ -24,6 +26,8 @@ curl --fail-with-body --silent --show-error \
   --data '{"amount":125000,"isNaira":false,"validityTime":20,"email":"buyer@example.test"}'
 
 # LOOKUP_API_KEY_CIPHERTEXT must be generated using LOOKUP_REFERENCE.
+# Omitting send_webhook prevents webhook delivery; the backend still records
+# activity logs and analytics for this lookup.
 LOOKUP_REFERENCE="LOOKUP-SYNTHETIC-2001"
 TRANSACTION_ID="FR-SYNTHETIC-1001"
 
