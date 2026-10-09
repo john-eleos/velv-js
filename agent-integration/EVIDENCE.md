@@ -11,9 +11,9 @@ Canonical backend repository: `velv-backend`
 - Repository instructions identify `velv-backend` as authoritative. The user identified `production` as the most accurate branch; remote `HEAD` also resolves to `refs/heads/production`.
 - A fresh read-only `git ls-remote` on 2026-10-09 returned `b81302575918fcd91fcdb48627dd4506c6dea161` for both remote `HEAD` and `refs/heads/production`.
 - The source commit is `feat(kyc): verification-first Youverify adapter with fail-closed biometrics, PEP & business screening (#1229)`, committed 2026-10-08T13:47:03+01:00.
-- It was inspected in the isolated clone `/Users/eleos/Documents/Codex/2026-10-09/task-6/backend-production-source`; no backend source was changed.
-- The unrelated checkout at `/Users/eleos/Documents/Claude/Projects/velvpay/velv-backend` remained on dirty local `Figo-Staging` commit `593e18d48dfbb5713caa7d7298b8a7c5aba5f375` and was preserved without modification.
-- The eight bounded contract files at `b81302575918fcd91fcdb48627dd4506c6dea161` are byte-for-byte identical to the previously audited `94289a4d9cc5f1bab5f3b714c77496c81cc25cf3`: route, collection controller, request validator/module, API-key middleware, transaction model, webhook helper, server rate limiter and API logger.
+- It was inspected in an isolated local source checkout; no backend source was changed.
+- An unrelated user checkout with pre-existing changes was preserved without modification and was not used as contract evidence.
+- The eight bounded contract files at `b81302575918fcd91fcdb48627dd4506c6dea161` are byte-for-byte identical to the earlier independently reviewed source snapshot: route, collection controller, request validator/module, API-key middleware, transaction model, webhook helper, server rate limiter and API logger.
 
 Public SDK repository: `john-eleos/velv-js`
 
@@ -83,7 +83,7 @@ Commands and results:
 ```text
 npm test
   9 tests, 9 passed, 0 failed, 0 skipped, 0 todo
-  Node test-runner duration: 52.235166 ms
+  Node test-runner duration: 57.304125 ms
 
 ../node_modules/.bin/tsc --noEmit --target ES2022 --module Node16 --moduleResolution Node16 --esModuleInterop --skipLibCheck examples/collection.ts
   PASS (exit 0)
@@ -115,16 +115,9 @@ The repository governance skill asks for `independent-reviewer`, but no such loc
 
 Verdict: **CLEAN for local documentation review, with notes**. The independent review accepted only the source-scoped/mock scope. Final source-provenance corrections require review on the exact publication commit; a verified deployed SHA is not required for truthful source-scoped publication because no live-state claim is made.
 
-## Read-only deployment-evidence inspection
+## Deployment boundary
 
-Local records do not establish the currently deployed backend SHA, but that does not invalidate the verified `production` source contract:
-
-- the stale remote-tracking ref in the dirty backend checkout points to `94289a4d9cc5f1bab5f3b714c77496c81cc25cf3`, while fresh `git ls-remote` identifies `b81302575918fcd91fcdb48627dd4506c6dea161` as current remote `production`; neither ref proves execution on a host;
-- the local `deployment-reports` ref contains no report mentioning either fresh production-source commit `b81302575918fcd91fcdb48627dd4506c6dea161` or the stale cached ref `94289a4d9cc5f1bab5f3b714c77496c81cc25cf3`;
-- its latest stored report, `reports/deployment-report-velv-backend-35377298340.txt`, attempted target `1d333a0c0c1ee7ab127dedf65e379a70007e531c` on 2026-09-18 and ended with `Deployment exit code: 1`;
-- no later successful deployment report, host-side release manifest, health response containing a build SHA, or immutable artifact digest was available locally.
-
-Therefore `b81302575918fcd91fcdb48627dd4506c6dea161` is verified as the current authoritative `production` source snapshot, not as the deployed host SHA. Exact deployment evidence remains missing and is required only before making a live-state claim.
+Deployment was not independently verified. Repository branch and ref inspection establish `b81302575918fcd91fcdb48627dd4506c6dea161` as the authoritative public `production` source snapshot, not as the code running on any host. No host release manifest, build-SHA health response or immutable deployed artifact was used. This does not block source-scoped publication because no live-state claim is made.
 
 ## Live-use checks outside source-scoped publication
 
