@@ -1,0 +1,13 @@
+# VelvPay NGN collection agent kit v0.1.0
+
+> Documentation index only. Inclusion is not a quality, safety, compatibility, availability or ranking claim.
+
+- Overview: ./README.md
+- Agent instructions: ./AGENTS.md
+- Human-readable reference: ./REFERENCE.md
+- OpenAPI 3.1 contract: ./openapi/velvpay-ngn-collection-v0.1.0.json
+- TypeScript example: ./examples/collection.ts
+- curl example: ./examples/collection.curl.sh
+- Offline evaluator: ./mock/collection-evaluator.cjs
+- Offline tests: ./test/collection-evaluator.test.cjs
+- Source evidence and unresolved live gates: ./EVIDENCE.md
