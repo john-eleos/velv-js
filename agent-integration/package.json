@@ -1,8 +1,8 @@
 {
-  "name": "velvpay-ngn-collection-agent-kit",
-  "version": "0.1.0",
+  "name": "velvpay-agent-api-documentation-kit",
+  "version": "0.2.0",
   "private": true,
-  "description": "Credential-free offline evaluation for the bounded VelvPay NGN collection flow",
+  "description": "Source-routed capability inventory and credential-free offline evaluation for VelvPay agent integrations",
   "type": "commonjs",
   "engines": {
     "node": ">=24"

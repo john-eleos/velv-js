@@ -1,13 +1,21 @@
-# VelvPay NGN collection agent kit v0.1.0
+# VelvPay agent API documentation kit v0.2.0-draft
 
 > Source-verified against the velv-backend production branch at commit b81302575918fcd91fcdb48627dd4506c6dea161 (commit date 2026-10-08; remote head verified 2026-10-09 UTC). Offline documentation index only; not live-deployment, sandbox, provider, quality, safety, compatibility, availability or ranking evidence.
 
 - Overview: ./README.md
 - Agent instructions: ./AGENTS.md
-- Human-readable reference: ./REFERENCE.md
-- OpenAPI 3.1 contract: ./openapi/velvpay-ngn-collection-v0.1.0.json
-- TypeScript example: ./examples/collection.ts
-- curl example: ./examples/collection.curl.sh
+- Complete source-route inventory and support boundaries: ./API_INVENTORY.md
+- Machine-readable capability manifest: ./capabilities/velvpay-api-capabilities-v0.2.0.json
+- NGN collection reference: ./REFERENCE.md
+- NGN collection OpenAPI 3.1: ./openapi/velvpay-ngn-collection-v0.1.0.json
+- Storefront and headless read OpenAPI 3.1: ./openapi/velvpay-agent-read-api-v0.2.0.json
+- NGN collection TypeScript example: ./examples/collection.ts
+- NGN collection curl example: ./examples/collection.curl.sh
+- Headless catalog TypeScript example: ./examples/catalog.ts
+- Headless catalog curl example: ./examples/catalog.curl.sh
 - Offline evaluator: ./mock/collection-evaluator.cjs
-- Offline tests: ./test/collection-evaluator.test.cjs
+- Offline tests: ./test/
 - Source evidence and unresolved live gates: ./EVIDENCE.md
+- Documentation feed guidance: ./SUBSCRIBE.md
+- JSON Feed: ./feeds/releases.json
+- Atom feed: ./feeds/releases.atom

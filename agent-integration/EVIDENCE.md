@@ -19,7 +19,7 @@ Public SDK repository: `john-eleos/velv-js`
 
 - Base branch `master` observed at `7a08fe9c005378e9e896e8bcff94598de379e636`.
 - Pending draft PR #4 head `docs/integration-resources` observed at `df654f6db48b3c8cfdf408f921af10e840247584`.
-- This local branch `docs/agent-integration-kit` starts from PR #4's head. It leaves the pending `Readme.md` change intact and adds only `agent-integration/`.
+- The v0.1 draft PR starts from PR #4's head, leaves the pending `Readme.md` change intact and adds only `agent-integration/`. This unpublished v0.2 review branch continues from the exact v0.1 draft head.
 
 ## Backend source trace
 
@@ -67,6 +67,16 @@ Backend limitations surfaced by source review:
 - the details controller can enqueue a webhook for any present `send_webhook` query-string value, including textual `false` or `undefined`.
 - omitting `send_webhook` prevents requested webhook delivery but does not make lookup read-only: the details controller writes an activity log and tracks an analytics event.
 
+## Expanded source-route inventory
+
+The v0.2 draft inventories every route registered in `controller/api.routes.js` at the pinned production source: 91 method/path pairs across 12 service groups. An exact method/path parity check between that source file and `capabilities/velvpay-api-capabilities-v0.2.0.json` passed with no missing or extra entries.
+
+The inventory separates route presence from a publishable execution contract. Provider-backed money movement, feature-gated capabilities, end-user-session routes, outbound side-effect helpers and routes needing further safety or authorization review remain typed as unverified, restricted or withheld. They are not promoted into generated execution examples.
+
+The v0.2 OpenAPI expansion is GET-only, not side-effect-free: authentication counters, request logs and analytics may still be written. It covers six v1 storefront retrievals and six scoped v2 headless-commerce retrievals. The v1 locations GET is excluded because its handler may initialize a default location. Source anchors are `controller/api.routes.js`, `controller/apiServices/storefront/`, `middlewares/apiService.js` and `middlewares/headlessCommerce.js`. Response records allow unknown model properties rather than inventing a stable persistence-field guarantee, and sensitive commerce/customer operations carry data-classification extensions.
+
+The official landing page `https://velvpay.com/apidocumentation` was readable and linked the expected Postman technical reference. The linked reference `https://documenter.getpostman.com/view/36526309/2sA3XY7J6K` timed out, so endpoint-level parity with that reference remains unverified and is stated as a gap in both inventory formats.
+
 ## Offline verification
 
 Recorded in the isolated local branch on 2026-10-09 UTC. No dependency installation or network access was used by these checks.
@@ -82,17 +92,20 @@ Commands and results:
 
 ```text
 npm test
-  9 tests, 9 passed, 0 failed, 0 skipped, 0 todo
-  Node test-runner duration: 57.304125 ms
+  14 tests, 14 passed, 0 failed, 0 skipped, 0 todo
+  Node test-runner duration: 57.850375 ms
 
-../node_modules/.bin/tsc --noEmit --target ES2022 --module Node16 --moduleResolution Node16 --esModuleInterop --skipLibCheck examples/collection.ts
+../node_modules/.bin/tsc --noEmit --target ES2022 --module Node16 --moduleResolution Node16 --esModuleInterop --skipLibCheck examples/collection.ts examples/catalog.ts
   PASS (exit 0)
 
-sh -n examples/collection.curl.sh
+sh -n examples/collection.curl.sh && sh -n examples/catalog.curl.sh
   PASS (exit 0)
 
 node -e "JSON.parse(...); assert production-source commit exists"
   OpenAPI production-source boundary: PASS
+
+source route-to-capability manifest parity
+  91 routes, no missing or extra method/path pairs: PASS
 
 git diff --cached --check
   PASS (exit 0 over the complete staged kit)
@@ -101,19 +114,25 @@ trailing-whitespace and final-newline scans over every kit file
   PASS
 ```
 
-The nine tests comprise the six accessible starter behaviours plus failed initialisation, duplicate final notification and bounded OpenAPI structure coverage. The evaluator injects its fetch function; it did not contact VelvPay or any provider.
+The first nine tests comprise the six accessible starter behaviours plus failed initialisation, duplicate final notification and bounded collection OpenAPI coverage. Five new tests verify the 91-route inventory, OpenAPI declarations for every `contract_verified` capability, the read-only v0.2 operation set, the two real documentation revisions in JSON Feed/Atom, and `llms.txt` navigation. The evaluator injects its fetch function; it did not contact VelvPay or any provider.
 
 No OpenAPI validator was installed in the isolated SDK clone, and installing new tooling was outside scope. The contract passed JSON parsing plus focused structural assertions, not a third-party full-spec lint.
 
 ## Adversarial self-review
 
-The repository governance skill asks for `independent-reviewer`, but no such local skill or reviewer tool was available in the original execution environment. The available `adversarial-reviewer` skill's primary preserved source was also missing, so its documented prompt-only fallback was used against every file in this directory. A separate independent review subsequently ran the nine offline tests and accepted the source-pinned/mock scope. Later source selection confirmed current `production` commit `b81302575918fcd91fcdb48627dd4506c6dea161`; its bounded contract files are unchanged from the independently reviewed snapshot.
+The repository governance skill asks for `independent-reviewer`, but no such local skill or reviewer tool was available in the original execution environment. The available `adversarial-reviewer` skill's primary preserved source was also missing, so its documented prompt-only fallback was used against the v0.1 files. A separate independent review subsequently ran the original nine offline tests and accepted the source-pinned/mock scope. Later source selection confirmed current `production` commit `b81302575918fcd91fcdb48627dd4506c6dea161`; its bounded collection contract files are unchanged from the independently reviewed snapshot. The v0.2 inventory/read-contract expansion has not yet received that independent review and must not be published until it does.
 
 - Saboteur finding, resolved: keying idempotency by transaction plus raw status could apply both `confirmed` and `successful` as separate paid transitions. The evaluator now guards the single terminal transition by transaction ID and collapses both aliases to semantic `paid`; conflicting later terminal states are not applied.
 - New-hire finding, retained as a note: the publication example and offline evaluator intentionally duplicate a small amount of request construction. Their shared paths and invariants are contract-tested, but maintainers must keep both aligned when the source contract changes.
 - Security-auditor finding, mitigated and retained as a note: shell-expanded headers can be visible to local process inspection. The curl file now forbids live-secret use and directs production integrations to a backend client with secret-manager integration.
 
-Verdict: **CLEAN for local documentation review, with notes**. The independent review accepted only the source-scoped/mock scope. Final source-provenance corrections require review on the exact publication commit; a verified deployed SHA is not required for truthful source-scoped publication because no live-state claim is made.
+The prompt-only adversarial review was repeated for the v0.2 expansion:
+
+- Saboteur finding, resolved: the first draft called every GET contract read-only, but the v1 locations GET may initialize a default location. That route is now withheld from OpenAPI, and the remaining specification is labeled GET-only rather than side-effect-free because authentication counters, logs and analytics may still be written.
+- New-hire finding, resolved: route classifications inherit a group default, but the resolution rule was implicit. The manifest now states the override rule and tests every route's effective classification against the declared type set.
+- Security-auditor finding, resolved: open persistence records could hide customer or merchant-sensitive fields. Relevant OpenAPI operations now carry data-classification extensions, and agent instructions require an explicit downstream allowlist.
+
+Verdict for v0.1: **CLEAN for local documentation review, with notes**. The v0.2 expansion is **review required**. A verified deployed SHA is not required for truthful source-scoped publication because no live-state claim is made, but it remains required before making a live-state claim.
 
 ## Deployment boundary
 
