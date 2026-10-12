@@ -1,0 +1,232 @@
+{
+  "schemaVersion": "1.0.0",
+  "documentationVersion": "0.2.0-draft",
+  "authoritativeSource": {
+    "repository": "velv-backend",
+    "branch": "production",
+    "commit": "b81302575918fcd91fcdb48627dd4506c6dea161",
+    "remoteHeadVerifiedOn": "2026-10-09",
+    "deploymentVerified": false
+  },
+  "publicDocumentation": {
+    "landingPage": "https://velvpay.com/apidocumentation",
+    "technicalReference": "https://documenter.getpostman.com/view/36526309/2sA3XY7J6K",
+    "landingPageObserved": true,
+    "technicalReferenceObserved": false,
+    "gap": "The Postman technical reference timed out during this review; no endpoint-level comparison claim is made."
+  },
+  "classificationDefinitions": {
+    "contract_verified": "Route, authentication and the documented request/response boundary were traced in source and are represented in a versioned OpenAPI file.",
+    "source_routed": "Route and middleware are present in source; the detailed public contract is not yet certified for agent generation.",
+    "feature_gated": "Source-routed but availability depends on a merchant feature or credential scope that was not verified in a live environment.",
+    "high_risk_unverified": "Source-routed money movement or provider-backed operation; excluded from generated execution examples pending separate certification.",
+    "restricted_session": "Uses an end-user session rather than merchant API credentials and is not part of the agent-facing merchant API.",
+    "withheld": "Present in source but intentionally omitted from public machine-execution contracts pending additional safety, authorization or side-effect review.",
+    "explicitly_unsupported": "The handler intentionally rejects the requested operation and directs callers to another workflow."
+  },
+  "classificationResolution": "A route-level classification overrides its group's defaultClassification; otherwise the group default applies.",
+  "authenticationProfiles": {
+    "v1_merchant_aes": {
+      "headers": ["api-key", "public-key", "reference-id"],
+      "source": "middlewares/apiService.js"
+    },
+    "v2_headless_bearer": {
+      "headers": ["Authorization: Bearer <vch_credential>"],
+      "source": "middlewares/headlessCommerce.js"
+    },
+    "user_session": {
+      "description": "Protected VelvPay user session; not interchangeable with merchant API credentials.",
+      "source": "middlewares/authJwt.js"
+    }
+  },
+  "groups": [
+    {
+      "id": "payments",
+      "authentication": "v1_merchant_aes",
+      "defaultClassification": "high_risk_unverified",
+      "source": "controller/api.routes.js:38-42,76-83",
+      "routes": [
+        { "method": "POST", "path": "/api/v1/service/payment/initiate", "classification": "withheld" },
+        { "method": "POST", "path": "/api/v1/service/payment/collection/transaction", "classification": "contract_verified", "openapi": "../openapi/velvpay-ngn-collection-v0.1.0.json" },
+        { "method": "GET", "path": "/api/v1/service/payment/collection/transaction/details", "classification": "contract_verified", "openapi": "../openapi/velvpay-ngn-collection-v0.1.0.json" },
+        { "method": "GET", "path": "/api/v1/service/payment/collection/transaction/resolve", "classification": "withheld" },
+        { "method": "POST", "path": "/api/v1/service/payment/payout" },
+        { "method": "GET", "path": "/api/v1/service/payment/payout-balance", "classification": "source_routed" },
+        { "method": "POST", "path": "/api/v1/service/payment/cash-craft/initiate" },
+        { "method": "POST", "path": "/api/v1/service/payment/cash-craft/fee" },
+        { "method": "GET", "path": "/api/v1/service/payment/cash-craft/resolve", "classification": "withheld" },
+        { "method": "GET", "path": "/api/v1/service/payment/cash-craft/details", "classification": "source_routed" },
+        { "method": "POST", "path": "/api/v1/service/payment/notice/create", "classification": "withheld" },
+        { "method": "GET", "path": "/api/v1/service/payment/notice/details/:noticeId", "classification": "withheld" },
+        { "method": "GET", "path": "/api/v1/service/payment/notice/all", "classification": "withheld" },
+        { "method": "POST", "path": "/api/v1/service/payment/notice/update/:noticeId", "classification": "withheld" },
+        { "method": "GET", "path": "/api/v1/service/payment/notice/update/status/:noticeId", "classification": "withheld" },
+        { "method": "GET", "path": "/api/v1/service/payment/notice/transactions/all/:noticeId", "classification": "withheld" }
+      ]
+    },
+    {
+      "id": "webhook-test",
+      "authentication": "v1_merchant_aes",
+      "defaultClassification": "withheld",
+      "source": "controller/api.routes.js:42",
+      "routes": [
+        { "method": "POST", "path": "/api/v1/service/webhook/test" }
+      ]
+    },
+    {
+      "id": "remittance",
+      "authentication": "v1_merchant_aes",
+      "defaultClassification": "high_risk_unverified",
+      "source": "controller/api.routes.js:57-59",
+      "routes": [
+        { "method": "GET", "path": "/api/v1/service/remittance/currencies", "classification": "source_routed" },
+        { "method": "GET", "path": "/api/v1/service/remittance/currencies/providers", "classification": "source_routed" },
+        { "method": "POST", "path": "/api/v1/service/remittance/initiate" }
+      ]
+    },
+    {
+      "id": "cross-border",
+      "authentication": "v1_merchant_aes",
+      "defaultClassification": "feature_gated",
+      "source": "controller/api.routes.js:62-70; controller/apiServices/cross-border/cross.border.api.controller.js",
+      "routes": [
+        { "method": "GET", "path": "/api/v1/cross-border/rates" },
+        { "method": "GET", "path": "/api/v1/cross-border/currency-pairs" },
+        { "method": "GET", "path": "/api/v1/cross-border/providers" },
+        { "method": "POST", "path": "/api/v1/cross-border/recipients/verify" },
+        { "method": "POST", "path": "/api/v1/cross-border/exchanges", "classification": "high_risk_unverified" },
+        { "method": "GET", "path": "/api/v1/cross-border/exchanges" },
+        { "method": "GET", "path": "/api/v1/cross-border/exchanges/:exchangeId" },
+        { "method": "POST", "path": "/api/v1/cross-border/exchanges/:exchangeId/payment-proof", "classification": "withheld" },
+        { "method": "POST", "path": "/api/v1/cross-border/exchanges/:exchangeId/cancel", "classification": "high_risk_unverified" }
+      ]
+    },
+    {
+      "id": "fund-requests",
+      "authentication": "mixed",
+      "defaultClassification": "source_routed",
+      "source": "controller/api.routes.js:86-89",
+      "routes": [
+        { "method": "POST", "path": "/api/v1/service/request/fund", "authentication": "v1_merchant_aes" },
+        { "method": "POST", "path": "/api/v1/service/request/fund/status", "authentication": "v1_merchant_aes" },
+        { "method": "POST", "path": "/api/v1/service/request/process/username/:link", "authentication": "user_session", "classification": "restricted_session" },
+        { "method": "GET", "path": "/api/v1/service/request/reject/username/:link", "authentication": "user_session", "classification": "restricted_session" }
+      ]
+    },
+    {
+      "id": "wallets",
+      "authentication": "v1_merchant_aes",
+      "defaultClassification": "source_routed",
+      "source": "controller/api.routes.js:95-101",
+      "routes": [
+        { "method": "POST", "path": "/api/v1/service/wallet/create" },
+        { "method": "GET", "path": "/api/v1/service/wallet/details" },
+        { "method": "GET", "path": "/api/v1/service/wallet/customers" },
+        { "method": "POST", "path": "/api/v1/service/wallet/withdrawal", "classification": "high_risk_unverified" },
+        { "method": "POST", "path": "/api/v1/service/wallet/internal/transfer", "classification": "high_risk_unverified" },
+        { "method": "GET", "path": "/api/v1/service/wallet/transactions" }
+      ]
+    },
+    {
+      "id": "general-banking",
+      "authentication": "v1_merchant_aes",
+      "defaultClassification": "source_routed",
+      "source": "controller/api.routes.js:104-105",
+      "routes": [
+        { "method": "GET", "path": "/api/v1/service/general/bank-list" },
+        { "method": "GET", "path": "/api/v1/service/general/bank-account-detail" }
+      ]
+    },
+    {
+      "id": "bills",
+      "authentication": "v1_merchant_aes",
+      "defaultClassification": "source_routed",
+      "source": "controller/api.routes.js:108-112",
+      "routes": [
+        { "method": "GET", "path": "/api/v1/service/bills/category/list" },
+        { "method": "GET", "path": "/api/v1/service/bills/list" },
+        { "method": "POST", "path": "/api/v1/service/bills/item/details" },
+        { "method": "POST", "path": "/api/v1/service/bills/item/pay", "classification": "high_risk_unverified" },
+        { "method": "GET", "path": "/api/v1/service/bills/status" }
+      ]
+    },
+    {
+      "id": "cards",
+      "authentication": "v1_merchant_aes",
+      "defaultClassification": "high_risk_unverified",
+      "source": "controller/api.routes.js:115-116; controller/apiServices/cards/module.dev.js",
+      "routes": [
+        { "method": "POST", "path": "/api/v1/service/card/process/pay" },
+        { "method": "GET", "path": "/api/v1/service/card/transaction/status", "classification": "source_routed" }
+      ]
+    },
+    {
+      "id": "invoices",
+      "authentication": "v1_merchant_aes",
+      "defaultClassification": "source_routed",
+      "source": "controller/api.routes.js:119-123; controller/apiServices/invoice/index.js",
+      "notes": "Handlers use generic HTTP 501 error responses for several unexpected failures; detailed contracts remain unpublished.",
+      "routes": [
+        { "method": "POST", "path": "/api/v1/service/invoice/create" },
+        { "method": "GET", "path": "/api/v1/service/invoice/list" },
+        { "method": "GET", "path": "/api/v1/service/invoice/details/:invoiceId" },
+        { "method": "POST", "path": "/api/v1/service/invoice/update/:invoiceId" },
+        { "method": "GET", "path": "/api/v1/service/invoice/remind/:invoiceId", "classification": "withheld" }
+      ]
+    },
+    {
+      "id": "storefront-v1",
+      "authentication": "v1_merchant_aes",
+      "defaultClassification": "source_routed",
+      "source": "controller/api.routes.js:126-150; controller/apiServices/storefront/",
+      "routes": [
+        { "method": "GET", "path": "/api/v1/service/storefront", "classification": "contract_verified", "openapi": "../openapi/velvpay-agent-read-api-v0.2.0.json" },
+        { "method": "PATCH", "path": "/api/v1/service/storefront" },
+        { "method": "GET", "path": "/api/v1/service/storefront/products", "classification": "contract_verified", "openapi": "../openapi/velvpay-agent-read-api-v0.2.0.json" },
+        { "method": "POST", "path": "/api/v1/service/storefront/products" },
+        { "method": "GET", "path": "/api/v1/service/storefront/products/:productId", "classification": "contract_verified", "openapi": "../openapi/velvpay-agent-read-api-v0.2.0.json" },
+        { "method": "PATCH", "path": "/api/v1/service/storefront/products/:productId" },
+        { "method": "DELETE", "path": "/api/v1/service/storefront/products/:productId" },
+        { "method": "GET", "path": "/api/v1/service/storefront/commerce/catalog" },
+        { "method": "GET", "path": "/api/v1/service/storefront/commerce/orders" },
+        { "method": "GET", "path": "/api/v1/service/storefront/commerce/orders/:orderId" },
+        { "method": "PATCH", "path": "/api/v1/service/storefront/commerce/orders/:orderId/status" },
+        { "method": "POST", "path": "/api/v1/service/storefront/commerce/orders/:orderId/payment-evidence", "classification": "withheld" },
+        { "method": "POST", "path": "/api/v1/service/storefront/commerce/orders/:orderId/returns" },
+        { "method": "POST", "path": "/api/v1/service/storefront/commerce/orders/:orderId/refunds", "classification": "high_risk_unverified" },
+        { "method": "GET", "path": "/api/v1/service/storefront/commerce/returns" },
+        { "method": "GET", "path": "/api/v1/service/storefront/commerce/customers" },
+        { "method": "GET", "path": "/api/v1/service/storefront/commerce/locations" },
+        { "method": "GET", "path": "/api/v1/service/storefront/locations", "classification": "withheld", "note": "The GET handler may initialize a default location, so it is not included in the retrieval-only agent contract." },
+        { "method": "POST", "path": "/api/v1/service/storefront/locations" },
+        { "method": "PATCH", "path": "/api/v1/service/storefront/locations/:locationId" },
+        { "method": "GET", "path": "/api/v1/service/storefront/inventory", "classification": "contract_verified", "openapi": "../openapi/velvpay-agent-read-api-v0.2.0.json" },
+        { "method": "PUT", "path": "/api/v1/service/storefront/locations/:locationId/inventory/:productId", "classification": "explicitly_unsupported" },
+        { "method": "GET", "path": "/api/v1/service/storefront/orders", "classification": "contract_verified", "openapi": "../openapi/velvpay-agent-read-api-v0.2.0.json" },
+        { "method": "GET", "path": "/api/v1/service/storefront/orders/:orderId", "classification": "contract_verified", "openapi": "../openapi/velvpay-agent-read-api-v0.2.0.json" },
+        { "method": "PATCH", "path": "/api/v1/service/storefront/orders/:orderId" }
+      ]
+    },
+    {
+      "id": "headless-commerce-v2",
+      "authentication": "v2_headless_bearer",
+      "defaultClassification": "feature_gated",
+      "source": "controller/api.routes.js:155-167; middlewares/headlessCommerce.js; controller/apiServices/storefront/commerce.js",
+      "routes": [
+        { "method": "GET", "path": "/api/v2/headless/catalog", "classification": "contract_verified", "scope": "catalog:read", "openapi": "../openapi/velvpay-agent-read-api-v0.2.0.json" },
+        { "method": "GET", "path": "/api/v2/headless/orders", "classification": "contract_verified", "scope": "orders:read", "openapi": "../openapi/velvpay-agent-read-api-v0.2.0.json" },
+        { "method": "GET", "path": "/api/v2/headless/orders/:orderId", "classification": "contract_verified", "scope": "orders:read", "openapi": "../openapi/velvpay-agent-read-api-v0.2.0.json" },
+        { "method": "POST", "path": "/api/v2/headless/checkout/preview", "scope": "checkout:create" },
+        { "method": "POST", "path": "/api/v2/headless/checkout/session", "classification": "high_risk_unverified", "scope": "checkout:create" },
+        { "method": "PATCH", "path": "/api/v2/headless/orders/:orderId/status", "scope": "orders:write" },
+        { "method": "GET", "path": "/api/v2/headless/customers", "classification": "contract_verified", "scope": "customers:read", "openapi": "../openapi/velvpay-agent-read-api-v0.2.0.json" },
+        { "method": "GET", "path": "/api/v2/headless/locations", "classification": "contract_verified", "scope": "locations:read", "openapi": "../openapi/velvpay-agent-read-api-v0.2.0.json" },
+        { "method": "GET", "path": "/api/v2/headless/inventory", "classification": "contract_verified", "scope": "inventory:read", "openapi": "../openapi/velvpay-agent-read-api-v0.2.0.json" },
+        { "method": "GET", "path": "/api/v2/headless/intelligence/summary", "scope": "intelligence:read" },
+        { "method": "GET", "path": "/api/v2/headless/intelligence/products", "scope": "intelligence:read" },
+        { "method": "GET", "path": "/api/v2/headless/intelligence/inventory", "scope": "intelligence:read" },
+        { "method": "GET", "path": "/api/v2/headless/intelligence/cohorts", "scope": "intelligence:read" }
+      ]
+    }
+  ]
+}

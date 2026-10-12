@@ -1,0 +1,19 @@
+{
+  "version": "https://jsonfeed.org/version/1.1",
+  "title": "VelvPay agent documentation revisions",
+  "description": "Static documentation revision feed; not API availability, deployment or payment-execution evidence.",
+  "items": [
+    {
+      "id": "urn:velvpay:agent-docs:0.1.0",
+      "url": "https://github.com/john-eleos/velv-js/pull/5",
+      "title": "0.1.0 public draft: bounded NGN collection agent kit",
+      "date_published": "2026-10-09T19:55:08Z",
+      "date_modified": "2026-10-09T19:55:27Z",
+      "content_text": "Public draft PR #5 introduces the source-verified NGN collection/status contract, examples and nine-test offline evaluator. This is a draft documentation revision, not a package release or live API certification.",
+      "_status": "public-draft-pr",
+      "_pull_request": "https://github.com/john-eleos/velv-js/pull/5",
+      "_documentation_commit": "e20d1cf0ef1efbcc07db8b542389b7800cb8c926",
+      "_backend_source_commit": "b81302575918fcd91fcdb48627dd4506c6dea161"
+    }
+  ]
+}

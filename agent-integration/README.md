@@ -1,10 +1,15 @@
-# VelvPay NGN collection agent kit
+# VelvPay agent API documentation kit
 
-Version: **0.1.0**
+Version: **0.2.0-draft**
 
 > **Production-source verified; live deployment not independently verified.** This kit was checked against the authoritative `velv-backend` `production` branch at commit `b81302575918fcd91fcdb48627dd4506c6dea161` (commit date 2026-10-08T13:47:03+01:00; remote head verified 2026-10-09 UTC). It is an offline evaluation, not evidence of the code currently running on a host, a connected sandbox lifecycle, provider availability or production certification.
 
-This bounded kit helps a server-side coding agent implement one VelvPay flow:
+This kit gives coding agents two deliberately different levels of information:
+
+1. a complete source inventory of the 91 merchant/headless routes registered in `controller/api.routes.js`, with typed support and risk classifications; and
+2. conservative, versioned machine-execution contracts only for routes whose public boundary was traced far enough to document safely.
+
+The original bounded collection flow remains supported and helps a server-side coding agent:
 
 1. initialise a fixed-amount temporary NGN collection account;
 2. store the merchant reference, VelvPay transaction ID and expected kobo amount;
@@ -16,14 +21,28 @@ It is documentation and an offline evaluation harness. It is not a live API cert
 ## Contents
 
 - `openapi/velvpay-ngn-collection-v0.1.0.json` — minimal versioned OpenAPI 3.1 contract.
+- `openapi/velvpay-agent-read-api-v0.2.0.json` — conservative storefront and scoped headless read contracts.
+- `capabilities/velvpay-api-capabilities-v0.2.0.json` — all 91 source-routed endpoints and typed publication status.
+- `API_INVENTORY.md` — task/service map, public-doc comparison and unsupported boundaries.
 - `REFERENCE.md` — readable request, response, state and error reference.
 - `AGENTS.md` — concise rules for coding agents working in this directory.
 - `examples/collection.curl.sh` — curl examples with credential placeholders.
 - `examples/collection.ts` — matching server-side TypeScript example.
+- `examples/catalog.curl.sh` and `examples/catalog.ts` — GET-only headless catalog retrieval examples; authentication usage counters, API logs, analytics and latency alerts may still be written.
 - `mock/collection-evaluator.cjs` — dependency-light, serialized in-process implementation used only by offline tests; it is not concurrency- or crash-safe.
 - `test/collection-evaluator.test.cjs` — synthetic tests for authentication, initialisation, failure, lookup and duplicate notifications.
+- `test/documentation-index.test.cjs` — offline inventory, OpenAPI, feed and navigation checks.
 - `EVIDENCE.md` — source traceability, SDK review notes and unresolved production gates.
 - `llms.txt` — optional index; it makes no quality or ranking claims.
+- `SUBSCRIBE.md`, `feeds/releases.json` and `feeds/releases.atom` — static revision polling; no account or webhook subscription.
+
+## Choose a task
+
+- Collect NGN through a temporary account: start with `REFERENCE.md` and the v0.1 OpenAPI.
+- Read storefront data with v1 credentials: use the v0.2 read OpenAPI and v1 authentication rules.
+- Read catalog/orders/customers/locations/inventory with a least-privilege headless credential: use the v0.2 read OpenAPI and catalog examples.
+- Discover whether another route exists: query the capability manifest, but do not execute a route unless its classification is `contract_verified` and your environment is separately approved.
+- Poll documentation revisions: read `SUBSCRIBE.md`; a feed item is not deployment or execution authority.
 
 ## Contract summary
 
@@ -57,7 +76,7 @@ From this directory, with Node.js 24 or later:
 npm test
 ```
 
-The suite uses only synthetic credentials and injected mock responses. It makes no network calls and requires no VelvPay account.
+The suite uses only synthetic credentials, local files and injected mock responses. It makes no network calls and requires no VelvPay account.
 
 The dependency declaration matches the existing public starter and SDK. In this review branch, `crypto-js` is already present at the repository root; no package installation was performed for the recorded evaluation.
 
