@@ -1,0 +1,411 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "VelvPay bounded NGN collection API",
+    "version": "0.1.0",
+    "description": "Source-verified contract and offline evaluation for one NGN temporary-account collection flow, checked against the authoritative velv-backend production branch at commit b81302575918fcd91fcdb48627dd4506c6dea161 (commit date 2026-10-08T13:47:03+01:00; remote head verified 2026-10-09 UTC). This document does not certify the code currently running on a host, a connected sandbox lifecycle, public availability or provider behaviour."
+  },
+  "servers": [
+    {
+      "url": "https://api.velvpay.com",
+      "description": "Base URL configured by velv-js; verify the deployed route before live use."
+    }
+  ],
+  "tags": [
+    {
+      "name": "NGN collection",
+      "description": "Fixed-amount temporary-account initialisation and status lookup without webhook delivery. Lookup still produces backend activity logs and analytics."
+    }
+  ],
+  "paths": {
+    "/api/v1/service/payment/collection/transaction": {
+      "post": {
+        "operationId": "createNgnCollection",
+        "summary": "Initialise a fixed-amount NGN collection account",
+        "description": "Creates a pending collection attempt. A 200 response is account initialisation, not payment confirmation.",
+        "tags": ["NGN collection"],
+        "security": [
+          {
+            "ApiKeyCiphertext": [],
+            "PublicKey": [],
+            "RequestReference": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCollectionRequest"
+              },
+              "example": {
+                "amount": 125000,
+                "isNaira": false,
+                "validityTime": 20,
+                "email": "buyer@example.test"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Temporary account initialised; transaction remains pending until independently confirmed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateCollectionResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          },
+          "503": {
+            "$ref": "#/components/responses/Unavailable"
+          }
+        }
+      }
+    },
+    "/api/v1/service/payment/collection/transaction/details": {
+      "get": {
+        "operationId": "getNgnCollectionStatus",
+        "summary": "Read one NGN collection transaction",
+        "description": "Looks up the stored transaction by VelvPay transaction ID or the merchant reference stored in reference-id during creation. This bounded operation deliberately omits send_webhook, so it does not request webhook delivery. It is not side-effect-free: the audited controller still writes an activity log and emits an analytics event.",
+        "tags": ["NGN collection"],
+        "security": [
+          {
+            "ApiKeyCiphertext": [],
+            "PublicKey": [],
+            "RequestReference": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "transaction_id",
+            "in": "query",
+            "required": true,
+            "description": "VelvPay transaction ID or the merchant reference persisted during collection creation.",
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            },
+            "example": "FR-SYNTHETIC-1001"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Transaction found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransactionDetailsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationError"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "503": {
+            "$ref": "#/components/responses/Unavailable"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "ApiKeyCiphertext": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "api-key",
+        "description": "CryptoJS AES ciphertext of the exact concatenation secretKey + publicKey + reference-id, encrypted with the merchant encryption key. Generate server-side."
+      },
+      "PublicKey": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "public-key"
+      },
+      "RequestReference": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "reference-id",
+        "description": "Reference used in this request's ciphertext. Use the stable merchant reference for creation and a fresh request reference for later lookup."
+      }
+    },
+    "schemas": {
+      "CreateCollectionRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["amount", "isNaira"],
+        "properties": {
+          "amount": {
+            "type": "integer",
+            "minimum": 100,
+            "description": "Fixed NGN amount in kobo. 125000 means NGN 1,250.00."
+          },
+          "isNaira": {
+            "type": "boolean",
+            "const": false,
+            "description": "Pinned false so amount is unambiguously expressed in kobo."
+          },
+          "validityTime": {
+            "type": "integer",
+            "minimum": 20,
+            "maximum": 60,
+            "default": 20,
+            "description": "Temporary account validity in minutes."
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Optional payer email. Use only when required and minimise retained personal data."
+          }
+        }
+      },
+      "CreateCollectionResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["status", "msg", "data"],
+        "properties": {
+          "status": {
+            "type": "string",
+            "const": "success"
+          },
+          "msg": {
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/InitialisedCollection"
+          }
+        }
+      },
+      "InitialisedCollection": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": ["amount", "amountInNaira", "transactionId", "bank", "validityTime"],
+        "properties": {
+          "accountNumber": {
+            "type": "string"
+          },
+          "accountName": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "number",
+            "description": "Expected amount in kobo."
+          },
+          "amountInNaira": {
+            "type": "number"
+          },
+          "transactionId": {
+            "type": "string"
+          },
+          "bank": {
+            "type": "string"
+          },
+          "validityTime": {
+            "type": "number"
+          },
+          "isTest": {
+            "type": "boolean",
+            "description": "True on the audited test-key mock branch. A mock is not evidence of a transfer."
+          }
+        }
+      },
+      "TransactionDetailsResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["status", "msg", "data"],
+        "properties": {
+          "status": {
+            "type": "string",
+            "const": "success"
+          },
+          "msg": {
+            "type": "string",
+            "const": "Transaction Found"
+          },
+          "data": {
+            "$ref": "#/components/schemas/CollectionTransaction"
+          }
+        }
+      },
+      "CollectionTransaction": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": ["txId", "status"],
+        "properties": {
+          "txId": {
+            "type": "string"
+          },
+          "referenceId": {
+            "type": ["string", "null"]
+          },
+          "accountNumber": {
+            "type": ["string", "null"]
+          },
+          "amount": {
+            "type": "number",
+            "description": "Stored amount in kobo for this bounded flow."
+          },
+          "amountInNaira": {
+            "type": "number"
+          },
+          "fee": {
+            "type": "number"
+          },
+          "feeInNaira": {
+            "type": "number"
+          },
+          "status": {
+            "type": "string",
+            "description": "Observed transaction state. Do not assume unlisted values are final."
+          },
+          "channel": {
+            "type": "string"
+          },
+          "method": {
+            "type": "string"
+          },
+          "date": {
+            "type": ["string", "null"],
+            "format": "date-time"
+          }
+        }
+      },
+      "ErrorEnvelope": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": ["status"],
+        "properties": {
+          "status": {
+            "type": "string",
+            "const": "error"
+          },
+          "reason": {
+            "type": "string"
+          },
+          "err": {
+            "type": "string"
+          },
+          "msg": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        }
+      }
+    },
+    "responses": {
+      "BadRequest": {
+        "description": "Bad request or provider/account initialisation failure.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorEnvelope"
+            }
+          }
+        }
+      },
+      "Forbidden": {
+        "description": "Invalid credentials, inactive merchant, IP mismatch or another access denial.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorEnvelope"
+            }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "Business or transaction not found.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorEnvelope"
+            }
+          }
+        }
+      },
+      "ValidationError": {
+        "description": "Required authentication header or request body validation failed.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorEnvelope"
+            }
+          }
+        }
+      },
+      "InternalError": {
+        "description": "Unexpected collection initialisation failure.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorEnvelope"
+            }
+          }
+        }
+      },
+      "Unavailable": {
+        "description": "API authentication dependency unavailable.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorEnvelope"
+            }
+          }
+        }
+      },
+      "RateLimited": {
+        "description": "Server-level per-IP rate limit exceeded. Exact deployed thresholds are environment-configurable.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["error"],
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "const": "Too many requests, slow down."
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
